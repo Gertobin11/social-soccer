@@ -1,0 +1,103 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+    provider = "prisma-client-js"
+}
+
+datasource db {
+    provider = "postgresql"
+    url      = env("DATABASE_URL")
+}
+
+model User {
+    id            String  @id @unique
+    email         String  @unique
+    emailVerified Boolean
+    firstName     String
+    lastName      String
+    passwordHash  String
+    addressID     Int
+
+    address            Address              @relation(fields: [addressID], references: [id])
+    sessions           Session[]
+    passwordResetToken PasswordResetToken[]
+    games              Game[]               @relation("playersInGame")
+    waitingLists       Game[]               @relation()
+    ratings            Rating[]
+    EmailVerification  EmailVerification[]
+}
+
+model Address {
+    id      Int    @id @default(autoincrement())
+    lineOne String
+    lineTwo String
+    city    String
+    county  String
+    country String
+    eircode String
+
+    users User[]
+}
+
+model Session {
+    token     String   @id @unique
+    userID    String
+    expiresAt DateTime
+
+    user User @relation(fields: [userID], references: [id])
+}
+
+model EmailVerification {
+    id      String @id @unique
+    userID  String
+    expires BigInt
+
+    user User @relation(references: [id], fields: [userID], onDelete: Cascade)
+}
+
+model PasswordResetToken {
+    token     String   @id @unique
+    userID    String
+    expiresAt DateTime
+
+    user User @relation(fields: [userID], references: [id])
+}
+
+enum Level {
+    BEGINNER
+    RECREATIONAL
+    INTERMEDITE
+    COMPETITIVE
+    ADVANCED
+}
+
+model Game {
+    id              Int     @id @default(autoincrement())
+    organiserID     String
+    locationID      Int
+    time            String
+    day             String
+    numberOfPlayers Int
+    active          Boolean
+
+    level       Level
+    players     User[]   @relation("playersInGame")
+    waitingList User[]
+    Rating      Rating[]
+}
+
+model Rating {
+    id       Int      @id @default(autoincrement())
+    userID   String
+    playerID String
+    gameID   Int
+    rating   Int
+    ratedOn  DateTime @default(now())
+
+    game   Game @relation(fields: [gameID], references: [id])
+    player User @relation(fields: [playerID], references: [id])
+}
