@@ -1,0 +1,45 @@
+import { createSession, generateSessionToken, setSessionTokenCookie } from "$lib/server/auth";
+import prisma from "$lib/server/prisma";
+import { loginSchema } from "$lib/validation/auth";
+import { verify } from '@node-rs/argon2';
+import { fail, superValidate } from "sveltekit-superforms";
+import { zod4 } from "sveltekit-superforms/adapters";
+import type { Actions } from "./$types";
+import { redirect } from "@sveltejs/kit";
+
+export const actions: Actions = {
+	login: async (event) => {
+		const form = await  superValidate(event, zod4(loginSchema))
+		
+        if(!form.valid) {
+            return fail(400, {form})
+        }
+
+		const existingUser = await prisma.user.findUnique({
+            where: {
+                email: form.data.email
+            }
+        })
+
+		if (!existingUser) {
+			return fail(400, { message: 'Incorrect username or password', form });
+		}
+
+		const validPassword = await verify(existingUser.passwordHash, form.data.password, {
+			memoryCost: 19456,
+			timeCost: 2,
+			outputLen: 32,
+			parallelism: 1
+		});
+
+		if (!validPassword) {
+			return fail(400, { message: 'Incorrect username or password', form });
+		}
+
+		const sessionToken = generateSessionToken();
+		const session = await createSession(sessionToken, existingUser.id);
+		setSessionTokenCookie(event, sessionToken, session.expiresAt);
+
+		return redirect(302, '/demo/lucia');
+	}
+}
