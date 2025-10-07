@@ -39,14 +39,17 @@
 		"prisma": "^6.16.3",
 		"svelte": "^5.39.5",
 		"svelte-check": "^4.3.2",
+		"sveltekit-superforms": "^2.27.2",
 		"tailwindcss": "^4.1.13",
 		"typescript": "^5.9.2",
 		"vite": "^7.1.7",
-		"vitest": "^3.2.4"
+		"vitest": "^3.2.4",
+		"zod": "^4.1.12"
 	},
 	"dependencies": {
 		"@node-rs/argon2": "^2.0.2",
 		"@prisma/client": "^6.16.3",
+		"mailersend": "^2.6.0",
 		"postgres": "^3.4.7"
 	}
 }

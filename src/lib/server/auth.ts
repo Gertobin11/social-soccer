@@ -1,6 +1,6 @@
 import type { RequestEvent } from '@sveltejs/kit';
 import { sha256 } from '@oslojs/crypto/sha2';
-import { encodeBase64url, encodeHexLowerCase } from '@oslojs/encoding';
+import { encodeBase32LowerCase, encodeBase64url, encodeHexLowerCase } from '@oslojs/encoding';
 import prisma from './prisma';
 
 /*
@@ -92,4 +92,10 @@ export function setSessionTokenCookie(event: RequestEvent, token: string, expire
 
 export function deleteSessionTokenCookie(event: RequestEvent) {
 	event.cookies.delete(sessionCookieName, { path: '/' });
+}
+
+export function generateUserId() {
+	const bytes = crypto.getRandomValues(new Uint8Array(15));
+	const id = encodeBase32LowerCase(bytes);
+	return id;
 }
