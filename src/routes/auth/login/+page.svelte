@@ -30,7 +30,7 @@
 
     <!-- the login form -->
 	<div class="col-span-1 flex justify-center items-center">
-		<form method="POST" use:enhance class="flex max-w-80 md:max-w-[400px] flex-col gap-3 shadow-xl p-8 bg-white">
+		<form method="POST" action="?/login" use:enhance class="flex max-w-80 md:max-w-[400px] flex-col gap-3 shadow-xl p-8 bg-white">
             <h1 class="h1">Log In</h1>
 			{#if $message}<h3>{$message}</h3>{/if}
 			<label class="label">

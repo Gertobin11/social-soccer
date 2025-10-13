@@ -3,14 +3,14 @@ import prisma from "$lib/server/prisma";
 import { loginSchema } from "$lib/validation/auth";
 import { verify } from '@node-rs/argon2';
 import { fail, superValidate } from "sveltekit-superforms";
+import { redirect} from "sveltekit-flash-message/server";
 import { zod4 } from "sveltekit-superforms/adapters";
 import type { Actions, PageServerLoad } from "./$types";
-import { redirect } from "@sveltejs/kit";
 
 export const load: PageServerLoad = async (event) => {
     // redirect to the homepage if the user already has a session
     if (event.locals.session) {
-        return redirect(302, "/")
+        return redirect("/", {type: "error", message: "User is already signed in"}, event)
     }
     const form = await superValidate(zod4(loginSchema))
 
@@ -50,6 +50,6 @@ export const actions: Actions = {
 		const session = await createSession(sessionToken, existingUser.id);
 		setSessionTokenCookie(event, sessionToken, session.expiresAt);
 
-		return redirect(302, '/');
+		return redirect('/', {type:"success", message: "Signed in Successfully"}, event);
 	}
 }

@@ -13,13 +13,12 @@ import { hash } from '@node-rs/argon2';
 import prisma from '$lib/server/prisma';
 import { sendVerificationEmail } from '$lib/server/email';
 import { redirect } from 'sveltekit-flash-message/server';
-import { success } from 'zod/v4';
 import { getErrorMessage } from '$lib/client/utils';
 
 export const load: PageServerLoad = async (event) => {
 	// redirect to the homepage if the user already has a session
 	if (event.locals.session) {
-		return redirect(302, '/');
+		return redirect("/", {type: "error", message: "User is already signed in"}, event)
 	}
 	const form = await superValidate(zod4(signupSchema));
 
@@ -80,11 +79,10 @@ export const actions: Actions = {
 			return fail(500, { form });
 		}
 		return redirect(
-			302,
 			'/',
 			{
 				message: 'Registration Successful. Please check your emails to verify account',
-				type: success
+				type: "success"
 			},
 			event
 		);

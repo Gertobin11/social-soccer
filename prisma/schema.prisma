@@ -28,7 +28,7 @@ model User {
     games              Game[]               @relation("playersInGame")
     waitingLists       Game[]               @relation()
     ratings            Rating[]
-    EmailVerification  EmailVerification[]
+    emailVerification  EmailVerification[]
 }
 
 model Address {
@@ -48,7 +48,7 @@ model Session {
     userID    String
     expiresAt DateTime
 
-    user User @relation(fields: [userID], references: [id])
+    user User @relation(fields: [userID], references: [id], onDelete: Cascade)
 }
 
 model EmailVerification {
@@ -64,7 +64,7 @@ model PasswordResetToken {
     userID    String
     expiresAt DateTime
 
-    user User @relation(fields: [userID], references: [id])
+    user User @relation(fields: [userID], references: [id], onDelete: Cascade)
 }
 
 enum Level {
@@ -87,7 +87,7 @@ model Game {
     level       Level
     players     User[]   @relation("playersInGame")
     waitingList User[]
-    Rating      Rating[]
+    rating      Rating[]
 }
 
 model Rating {

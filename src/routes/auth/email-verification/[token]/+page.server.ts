@@ -34,7 +34,7 @@ export const load: PageServerLoad = async (event) => {
 
 		} catch (errorObject) {
 			// TODO log errors
-            redirect(302, "/", {type: "error", message: "Unable to verify email, please try again or contact support"}, event);
+            redirect("/", {type: "error", message: "Unable to verify email, please try again or contact support"}, event);
 		}
 
 		

@@ -1,10 +1,16 @@
 <script lang="ts">
 	import '../app.css';
-    import '../global.css'
+	import '../global.css';
 	import favicon from '$lib/assets/favicon.svg';
 	import Icon from '@iconify/svelte';
 
+	import { getFlash } from 'sveltekit-flash-message';
+	import { page } from '$app/state';
+
+	const flash = getFlash(page);
+
 	import type { LayoutProps } from './$types';
+	import Logout from '$lib/components/functional/Logout.svelte';
 
 	let { data, children }: LayoutProps = $props();
 </script>
@@ -12,6 +18,21 @@
 <svelte:head>
 	<link rel="icon" href={favicon} />
 </svelte:head>
+
+<!-- hidden form for logging out users-->
+<form class="hidden" action="/?/logout" id="logout_form" method="POST"></form>
+
+<!-- create toast to show messages from the server-->
+{#if $flash}
+	<div class="absolute flex w-full justify-center p-2 md:justify-end">
+		<div
+			class={`${$flash.type === 'success' ? 'preset-filled-success-500' : 'preset-filled-error-500'} flex w-full justify-between rounded-xl p-4 shadow-xl md:w-64`}
+		>
+			<p>{$flash.message}</p>
+			<button onclick={() => ($flash = undefined)}>X</button>
+		</div>
+	</div>
+{/if}
 
 <!-- Main navigation for the top of the page-->
 <nav
@@ -26,9 +47,10 @@
 	<div class="flex shrink justify-evenly gap-2 text-lg text-surface-800">
 		{#if data.session}
 			<a class="hover:text-black hover:underline" href="/">My Games</a>
+			<Logout />
 		{:else}
 			<a class="hover:text-black hover:underline" href="/auth/login">Login</a>
-			<a class="hover:text-black hover:u`nderline" href="/auth/register">Register</a>
+			<a class="hover:text-black hover:underline" href="/auth/register">Register</a>
 		{/if}
 	</div>
 </nav>
