@@ -1,32 +1,40 @@
-import { fail, superValidate } from "sveltekit-superforms";
-import type { Actions, PageServerLoad } from "./$types";
-import { zod4 } from "sveltekit-superforms/adapters";
-import { signupSchema } from "$lib/validation/auth";
-import { createEmailVerificationToken, createSession, generateToken, generateUserId, setSessionTokenCookie } from "$lib/server/auth";
-import { hash } from "@node-rs/argon2";
-import prisma from "$lib/server/prisma";
-import { redirect } from "@sveltejs/kit";
-import { create } from "domain";
+import { fail, message, superValidate } from 'sveltekit-superforms';
+import type { Actions, PageServerLoad } from './$types';
+import { zod4 } from 'sveltekit-superforms/adapters';
+import { signupSchema } from '$lib/validation/auth';
+import {
+	createEmailVerificationToken,
+	createSession,
+	generateToken,
+	generateUserId,
+	setSessionTokenCookie
+} from '$lib/server/auth';
+import { hash } from '@node-rs/argon2';
+import prisma from '$lib/server/prisma';
+import { sendVerificationEmail } from '$lib/server/email';
+import { redirect } from 'sveltekit-flash-message/server';
+import { success } from 'zod/v4';
+import { getErrorMessage } from '$lib/client/utils';
 
 export const load: PageServerLoad = async (event) => {
-    // redirect to the homepage if the user already has a session
-    if (event.locals.session) {
-        return redirect(302, "/")
-    }
-    const form = await superValidate(zod4(signupSchema))
+	// redirect to the homepage if the user already has a session
+	if (event.locals.session) {
+		return redirect(302, '/');
+	}
+	const form = await superValidate(zod4(signupSchema));
 
-    return {form}
-}
+	return { form };
+};
 
 export const actions: Actions = {
 	register: async (event) => {
-        const form = await  superValidate(event, zod4(signupSchema))
-		
-        if(!form.valid) {
-            return fail(400, {form})
-        }
+		const form = await superValidate(event, zod4(signupSchema));
 
-        const {email, password} = form.data
+		if (!form.valid) {
+			return fail(400, { form });
+		}
+
+		const { email, password } = form.data;
 
 		const userID = generateUserId();
 		const passwordHash = await hash(password, {
@@ -37,22 +45,48 @@ export const actions: Actions = {
 		});
 
 		try {
-            await prisma.user.create({
-                data: {
-                    id: userID,
-                    email,
-                    emailVerified: false,
-                    passwordHash,
+
+            // check if the user is already registered
+            const previousUser = await prisma.user.findUnique({
+                where: {
+                    email
                 }
             })
 
-            const token = await createEmailVerificationToken(userID)
-			// const sessionToken = generateToken();
-			// const session = await createSession(sessionToken, userID);
-			// setSessionTokenCookie(event, sessionToken, session.expiresAt);
-		} catch {
-			return fail(500, { message: 'An error has occurred' , form});
+            if(previousUser) {
+                throw new Error("Account with this email aready exists")
+            }
+
+			await prisma.user.create({
+				data: {
+					id: userID,
+					email,
+					emailVerified: false,
+					passwordHash
+				}
+			});
+
+            // create the email validation token
+			const token = await createEmailVerificationToken(userID);
+			const url = event.url.origin + '/' + token;
+			await sendVerificationEmail(email, url);
+
+            // sign the user in to their unverified account
+			const sessionToken = generateToken();
+			const session = await createSession(sessionToken, userID);
+			setSessionTokenCookie(event, sessionToken, session.expiresAt);
+		} catch (error) {
+           form.message = getErrorMessage(error)
+			return fail(500, { form });
 		}
-		return redirect(302, '/demo/lucia');
+		return redirect(
+			302,
+			'/',
+			{
+				message: 'Registration Successful. Please check your emails to verify account',
+				type: success
+			},
+			event
+		);
 	}
 };

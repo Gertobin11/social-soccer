@@ -1,10 +1,9 @@
 import { createSession, generateToken, setSessionTokenCookie, validateEmailVerificationToken } from "$lib/server/auth";
 import prisma from "$lib/server/prisma";
 import type { PageServerLoad } from "./$types";
-import { redirect } from "sveltekit-flash-message/server";
+import { redirect, setFlash } from "sveltekit-flash-message/server";
 
 export const load: PageServerLoad = async (event) => {
-    let message: {message: string, type: "error" | "success"}
 		try {
 			const params = event.params;
 			const token = params.token;
@@ -28,12 +27,15 @@ export const load: PageServerLoad = async (event) => {
 
 			const session = await createSession(sessionToken, userID);
 			setSessionTokenCookie(event, sessionToken, session.expiresAt);
-            message = {type: "success", message: "Email has been verified"}
+          
+            setFlash({type: "success", message: "Email has been verified"}, event)
+
+            return 
 
 		} catch (errorObject) {
 			// TODO log errors
-			message = {type: "error", message: "Unable to verify email, please try again or contact support"}
+            redirect(302, "/", {type: "error", message: "Unable to verify email, please try again or contact support"}, event);
 		}
 
-		redirect(302, "/", message, event);
+		
 	}
