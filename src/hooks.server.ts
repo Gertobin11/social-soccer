@@ -19,9 +19,15 @@ const handleAuth: Handle = async ({ event, resolve }) => {
 		auth.deleteSessionTokenCookie(event);
 	}
 
-    if( user && user.emailVerified === false) {
-        // TODO redirect to verify email page
-    }
+    // check that a user is verified and has completed there profile
+	if (user) {
+		if (user.emailVerified === false) {
+			// TODO redirect to verify email page
+		}
+		if (!user.firstName || !user.lastName || !user.addressID) {
+			// TODO handle and redirect user to complete profile
+		}
+	}
 
 	event.locals.user = user;
 	event.locals.session = session;

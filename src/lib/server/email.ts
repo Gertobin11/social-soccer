@@ -21,3 +21,20 @@ export async function sendVerificationEmail(email: string, url: string) {
 
 	await mailerSend.email.send(emailParams);
 }
+
+export async function sendPasswordRestEmail(email: string, url: string) {
+	const sentFrom = new Sender('socialsoccerireland@gmail.com', 'Gerard Tobin');
+
+	const recipients = [new Recipient(email)];
+
+	const emailParams = new EmailParams()
+		.setFrom(sentFrom)
+		.setTo(recipients)
+		.setReplyTo(sentFrom)
+		.setSubject('Password Reset | Social Soccer')
+		.setHtml(
+			`<h1>Password Reset</h1><p>If you have requested a password reset, please click on the link </p><a href="${url}">Click Here</a>`
+		)
+
+	await mailerSend.email.send(emailParams);
+}

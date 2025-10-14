@@ -67,7 +67,7 @@ export const actions: Actions = {
 
             // create the email validation token
 			const token = await createEmailVerificationToken(userID);
-			const url = event.url.origin + '/' + token;
+			const url = event.url.origin + '/email-verification/' + token;
 			await sendVerificationEmail(email, url);
 
             // sign the user in to their unverified account
