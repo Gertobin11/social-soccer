@@ -7,6 +7,7 @@ import type { Actions, PageServerLoad } from './$types';
 import prisma from '$lib/server/prisma';
 import { generatePasswordResetToken } from '$lib/server/auth';
 import { sendPasswordRestEmail } from '$lib/server/email';
+import { getErrorMessage } from '$lib/client/utils';
 
 export const load: PageServerLoad = async (event) => {
 	// redirect to the homepage if the user already has a session
@@ -19,7 +20,7 @@ export const load: PageServerLoad = async (event) => {
 };
 
 export const actions: Actions = {
-	default: async (event) => {
+	reset: async (event) => {
 		const form = await superValidate(event.request, zod4(passwordResetSchema));
 		try {
 			if (!form.valid) {
@@ -29,7 +30,7 @@ export const actions: Actions = {
 			const user = await prisma.user.findFirst({ where: { email: email } });
 			if (user) {
 				const token = await generatePasswordResetToken(user.id);
-				const url = event.url.origin + '/password-reset/' + token;
+				const url = event.url.origin + '/auth/password-reset/' + token;
 				await sendPasswordRestEmail(user.email, url);
 			}
 
@@ -45,8 +46,8 @@ export const actions: Actions = {
 				success: true,
 				form
 			};
-		} catch (errorObject) {
-			setFlash({ type: 'error', message: `${errorObject}` }, event);
+		} catch (error) {
+			setFlash({ type: 'error', message: `${getErrorMessage(error)}` }, event);
 			return fail(400, { form });
 		}
 	}

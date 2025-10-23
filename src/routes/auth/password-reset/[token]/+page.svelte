@@ -1,5 +1,5 @@
 <script lang="ts">
-	import {passwordResetSchema } from '$lib/validation/auth';
+	import {newPasswordSchema} from '$lib/validation/auth';
 	import { zod4 } from 'sveltekit-superforms/adapters';
 	import type { PageProps } from './$types';
 	import { setError, setMessage, superForm } from 'sveltekit-superforms/client';
@@ -8,11 +8,11 @@
 	let { data }: PageProps = $props();
 
 	const { form, errors, message, constraints, enhance } = superForm(data.form, {
-		validators: zod4(passwordResetSchema),
+		validators: zod4(newPasswordSchema),
 		onUpdate({ form }) {
 			// Form validation
-			if (!form.data.email.includes('@')) {
-				setError(form, 'email', 'Malformed email address.');
+			if (form.data.password.length < 8) {
+				setError(form, 'password', 'Password must be 8 characters long');
 			} else if (form.valid) {
 				setMessage(form, 'Valid data!');
 			}
@@ -24,27 +24,40 @@
 <section class="grid grid-cols-1 md:grid-cols-2 h-[calc(100vh-4rem)]">
     <!-- a full screen sliding image -->
 	<div class="h-[calc(100vh-4rem)]">
-        <!-- Photo by Oladimeji Ajegbile: https://www.pexels.com/photo/man-working-using-a-laptop-2696299/ -->
-        <SlidingImage imageSrc="/password-reset.webp" />
+        <!-- Photo by Robo Michalec: https://www.pexels.com/photo/referee-talking-to-a-football-player-5817858/ -->
+        <SlidingImage imageSrc="/create-new-password.webp" />
     </div>
 
     <!-- the login form -->
 	<div class="col-span-1 flex justify-center items-center h-full">
 		<form method="POST" action="?/reset" use:enhance class="flex max-w-80 md:max-w-[400px] flex-col gap-3 shadow-xl p-8 bg-white">
-            <h1 class="h1">Reset Password</h1>
+            <h1 class="h1">Create New Password</h1>
 			{#if $message}<h3>{$message}</h3>{/if}
 			<label class="label">
-				Email<br />
+				Password<br />
 				<input
                 class="input"
-					name="email"
-					type="email"
-					aria-invalid={$errors.email ? 'true' : undefined}
-					bind:value={$form.email}
-					{...$constraints.email}
+					name="password"
+					type="password"
+					aria-invalid={$errors.password ? 'true' : undefined}
+					bind:value={$form.password}
+					{...$constraints.password}
 				/>
 			</label>
-			{#if $errors.email}<span class="text-error-500">{$errors.email}</span>{/if}
+			{#if $errors.password}<span class="text-error-500">{$errors.password}</span>{/if}
+
+            <label class="label">
+				Confirm Password<br />
+				<input
+                class="input"
+					name="confirmPassword"
+					type="password"
+					aria-invalid={$errors.confirmPassword ? 'true' : undefined}
+					bind:value={$form.confirmPassword}
+					{...$constraints.confirmPassword}
+				/>
+			</label>
+			{#if $errors.confirmPassword}<span class="text-error-500">{$errors.confirmPassword}</span>{/if}
 
 			<div class="flex justify-center">
 				<button class="btn preset-filled-primary-500">Submit</button>

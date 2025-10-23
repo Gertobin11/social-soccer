@@ -3,8 +3,8 @@ import { DateTime } from "luxon";
 import type { PageServerLoad } from "./$types";
 import { superValidate } from "sveltekit-superforms";
 import { zod4 } from "sveltekit-superforms/adapters";
-import { passwordResetSchema } from "$lib/validation/auth";
-import { redirect, setFlash } from "sveltekit-flash-message/server";
+import { newPasswordSchema } from "$lib/validation/auth";
+import { redirect } from "sveltekit-flash-message/server";
 import { getErrorMessage } from "$lib/client/utils";
 
 export const load: PageServerLoad = async (event) => {
@@ -22,11 +22,11 @@ export const load: PageServerLoad = async (event) => {
 
         const now = DateTime.now().toMillis()
 
-        if (passwordResetToken.expiresAt.getTime() > now ) {
+        if (passwordResetToken.expiresAt.getTime() < now ) {
             throw new Error("Token has expired")
         }
 
-        const form = await superValidate(zod4(passwordResetSchema)) 
+        const form = await superValidate(zod4(newPasswordSchema)) 
         return {form}
     } catch (error) {
         redirect("/", {message: `Unable to load Password Reset Form with Error: ${getErrorMessage(error)}`, type: "error"}, event)

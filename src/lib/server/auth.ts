@@ -150,6 +150,7 @@ export const validateEmailVerificationToken = async (token: string) => {
 };
 
 export async function generatePasswordResetToken(userID: string) {
+    // TODO clean up old tokens
     const token = generateToken();
         // set the token to expire in 30 minutes in miiliseconds
     const expires = luxon.DateTime.now().plus({minutes: 30}).toJSDate()
