@@ -22,7 +22,7 @@ model User {
     lastName      String?
     addressID     Int?
 
-    address            Address?              @relation(fields: [addressID], references: [id])
+    address            Address?             @relation(fields: [addressID], references: [id])
     sessions           Session[]
     passwordResetToken PasswordResetToken[]
     games              Game[]               @relation("playersInGame")
@@ -39,8 +39,19 @@ model Address {
     county  String
     country String
     eircode String
+    coordinatesID Int @unique
 
     users User[]
+    coordinates Coordinates @relation(fields: [coordinatesID], references: [id], onDelete: Cascade)
+}
+
+model Coordinates {
+    id          Int                                   @id @default(autoincrement())
+    // using postgis for geospatial enquiries
+    coordinates Unsupported("geography(Point, 4326)")
+    address Address?
+
+    @@index([coordinates], type: Gist)
 }
 
 model Session {
