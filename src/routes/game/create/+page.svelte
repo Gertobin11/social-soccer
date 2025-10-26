@@ -1,8 +1,6 @@
 <script lang="ts">
 	import { superForm } from 'sveltekit-superforms/client';
 	import type { PageProps } from './$types';
-	import { zod4 } from 'sveltekit-superforms/adapters';
-	import { createGameSchema } from '$lib/validation/game';
 	import { daysOfTheWeek } from '$lib/client/utils';
 	import { Level } from '@prisma/client';
 	import { setOptions, importLibrary } from '@googlemaps/js-api-loader';
@@ -10,13 +8,24 @@
 	import { getFlash } from 'sveltekit-flash-message';
 	import { page } from '$app/state';
 	import { parseGeocodeAddress } from '$lib/client/location';
-	import { Modal } from '@skeletonlabs/skeleton-svelte';
 	const flash = getFlash(page);
 
 	let { data }: PageProps = $props();
 
-	const { form, errors, message, constraints, enhance } = superForm(data.form, {
-		validators: zod4(createGameSchema)
+	const { form, errors, enhance, constraints, message } = superForm(data.gameDetailsForm, {
+		resetForm: false
+	});
+
+	let addressComplete = $state(false);
+
+	const {
+		form: addressForm,
+		errors: addressErrors,
+		constraints: addressConstraints,
+		enhance: addressEnhance,
+		message: addressMessage
+	} = superForm(data.addressForm, {
+		resetForm: false
 	});
 
 	let mapElement: HTMLDivElement;
@@ -61,12 +70,13 @@
 					if (response.results && response.results.length > 0) {
 						// The address is in the 'formatted_address' field of the first result
 						const address = parseGeocodeAddress(response.results[0].address_components);
-						$form.lineOne = address.lineOne;
-						$form.lineTwo = address.lineTwo;
-						$form.city = address.city;
-						$form.county = address.county;
-						$form.country = address.country;
-						$form.eircode = address.eircode;
+
+						$addressForm.lineOne = address.lineOne;
+						$addressForm.lineTwo = address.lineTwo;
+						$addressForm.city = address.city;
+						$addressForm.county = address.county;
+						$addressForm.country = address.country;
+						$addressForm.eircode = address.eircode;
 
 						for (let value of Object.values($form)) {
 							console.log(value);
@@ -103,181 +113,171 @@
 		<div class="h-full w-full" bind:this={mapElement}></div>
 	</div>
 
-	<!-- the create game form -->
+	<!-- the address form -->
 	<div class="col-span-1 flex items-center justify-center">
-		<form
-			method="POST"
-			action="?/create"
-			use:enhance
-			class="flex max-w-80 flex-col gap-3 bg-white p-8 shadow-xl md:max-w-[400px]"
-		>
-			<h1 class="h1">Create a Game</h1>
-			{#if $message}<h3>{$message}</h3>{/if}
-
-			<label class="label">
-				Day<br />
-				<select
-					class="input"
-					name="day"
-					aria-invalid={$errors.day ? 'true' : undefined}
-					bind:value={$form.day}
-					{...$constraints.day}
+		<div class="bg-white p-8 shadow-xl md:max-w-[450px]">
+			{#if !addressComplete}
+				<h1 class="h1">Create a Game</h1>
+				<form
+					method="POST"
+					action="?/createAddress"
+					use:enhance
+					class="flex max-w-80 flex-col gap-3"
 				>
-					{#each daysOfTheWeek as day}
-						<option value={day}>{day}</option>
-					{/each}
-				</select>
-			</label>
+					{#if $addressMessage}<h3>{$addressMessage}</h3>{/if}
 
-			<label class="label">
-				Time<br />
-				<input
-					class="input"
-					name="time"
-					type="time"
-					aria-invalid={$errors.time ? 'true' : undefined}
-					bind:value={$form.time}
-					{...$constraints.time}
-				/>
-			</label>
-			{#if $errors.time}<span class="text-error-500">{$errors.time}</span>{/if}
+					<label class="label block">
+						Address Line 1 *
+						<input
+							class="input w-full rounded-md border border-gray-300 p-2 focus:border-indigo-500 focus:ring-indigo-500"
+							name="lineOne"
+							type="text"
+							aria-invalid={$addressErrors.lineOne ? 'true' : undefined}
+							bind:value={$addressForm.lineOne}
+							{...$addressConstraints.lineOne}
+						/>
+					</label>
 
-			<label class="label">
-				Level<br />
-				<select
-					class="input"
-					name="level"
-					aria-invalid={$errors.level ? 'true' : undefined}
-					bind:value={$form.level}
-					{...$constraints.level}
+					<!-- Address Line 2 -->
+					<label class="label block">
+						Address Line 2 *
+						<input
+							class="input w-full rounded-md border border-gray-300 p-2 focus:border-indigo-500 focus:ring-indigo-500"
+							name="lineTwo"
+							type="text"
+							aria-invalid={$addressErrors.lineTwo ? 'true' : undefined}
+							bind:value={$addressForm.lineTwo}
+							{...$addressConstraints.lineTwo}
+						/>
+					</label>
+
+					<!-- City -->
+					<label class="label block">
+						City / Town *
+						<input
+							class="input w-full rounded-md border border-gray-300 p-2 focus:border-indigo-500 focus:ring-indigo-500"
+							name="city"
+							type="text"
+							aria-invalid={$addressErrors.city ? 'true' : undefined}
+							bind:value={$addressForm.city}
+							{...$addressConstraints.city}
+						/>
+					</label>
+
+					<!-- County -->
+					<label class="label block">
+						County *
+						<input
+							class="input w-full rounded-md border border-gray-300 p-2 focus:border-indigo-500 focus:ring-indigo-500"
+							name="county"
+							type="text"
+							aria-invalid={$addressErrors.county ? 'true' : undefined}
+							bind:value={$addressForm.county}
+							{...$addressConstraints.county}
+						/>
+					</label>
+
+					<!-- Eircode -->
+					<label class="label block">
+						Eircode *
+						<input
+							class="input w-full rounded-md border border-gray-300 p-2 focus:border-indigo-500 focus:ring-indigo-500"
+							name="eircode"
+							type="text"
+							aria-invalid={$addressErrors.eircode ? 'true' : undefined}
+							bind:value={$addressForm.eircode}
+							{...$addressConstraints.eircode}
+						/>
+					</label>
+
+					<!-- Country -->
+					<label class="label block">
+						Country *
+						<input
+							class="input w-full rounded-md border border-gray-300 p-2 focus:border-indigo-500 focus:ring-indigo-500"
+							name="country"
+							type="text"
+							aria-invalid={$addressErrors.country ? 'true' : undefined}
+							bind:value={$addressForm.country}
+							{...$addressConstraints.country}
+						/>
+					</label>
+                    <div class="my-4 flex justify-center">
+						<button class="btn preset-filled-primary-500">Continue</button>
+					</div>
+				</form>
+			{:else}
+				<form
+					method="POST"
+					action="?/createGame"
+					use:enhance
+					class="flex max-w-80 flex-col gap-3"
 				>
-					{#each Object.values(Level) as level}
-						<option value={level}>{level}</option>
-					{/each}
-				</select>
-			</label>
-			{#if $errors.level}<span class="text-error-500">{$errors.level}</span>{/if}
+					{#if $message}<h3>{$message}</h3>{/if}
 
-			<label class="label">
-				No. of PLayers<br />
-				<input
-					class="input"
-					name="numberOfPlayers"
-					type="number"
-					aria-invalid={$errors.numberOfPlayers ? 'true' : undefined}
-					bind:value={$form.numberOfPlayers}
-					{...$constraints.numberOfPlayers}
-				/>
-			</label>
-			{#if $errors.numberOfPlayers}<span class="text-error-500">{$errors.numberOfPlayers}</span
-				>{/if}
+					<label class="label">
+						Day<br />
+						<select
+							class="input"
+							name="day"
+							aria-invalid={$errors.day ? 'true' : undefined}
+							bind:value={$form.day}
+							{...$constraints.day}
+						>
+							{#each daysOfTheWeek as day}
+								<option value={day}>{day}</option>
+							{/each}
+						</select>
+					</label>
 
-			<div class="my-4 flex justify-center">
-				<button class="btn preset-filled-primary-500">Submit</button>
-			</div>
-			<div class="flex w-full justify-end">
-				<a class="text-surface-600 underline hover:text-surface-400" href="/auth/password-reset"
-					>Forgot Password?</a
-				>
-			</div>
-		</form>
+					<label class="label">
+						Time<br />
+						<input
+							class="input"
+							name="time"
+							type="time"
+							aria-invalid={$errors.time ? 'true' : undefined}
+							bind:value={$form.time}
+							{...$constraints.time}
+						/>
+					</label>
+					{#if $errors.time}<span class="text-error-500">{$errors.time}</span>{/if}
+
+					<label class="label">
+						Level<br />
+						<select
+							class="input"
+							name="level"
+							aria-invalid={$errors.level ? 'true' : undefined}
+							bind:value={$form.level}
+							{...$constraints.level}
+						>
+							{#each Object.values(Level) as level}
+								<option value={level}>{level}</option>
+							{/each}
+						</select>
+					</label>
+					{#if $errors.level}<span class="text-error-500">{$errors.level}</span>{/if}
+
+					<label class="label">
+						No. of PLayers<br />
+						<input
+							class="input"
+							name="numberOfPlayers"
+							type="number"
+							aria-invalid={$errors.numberOfPlayers ? 'true' : undefined}
+							bind:value={$form.numberOfPlayers}
+							{...$constraints.numberOfPlayers}
+						/>
+					</label>
+					{#if $errors.numberOfPlayers}<span class="text-error-500">{$errors.numberOfPlayers}</span
+						>{/if}
+
+					<div class="my-4 flex justify-center">
+						<button class="btn preset-filled-primary-500">Create</button>
+					</div>
+				</form>
+			{/if}
+		</div>
 	</div>
 </section>
-
-<!-- Modal for confirming the address generated from the reverse geo lookup-->
-<Modal
-	open={openState}
-	onOpenChange={(e) => (openState = e.open)}
-	triggerBase="btn preset-tonal"
-	contentBase="card bg-surface-100-900 p-4 space-y-4 shadow-xl max-w-screen-sm"
-	backdropClasses="backdrop-blur-sm"
->
-	{#snippet trigger()}Open Modal{/snippet}
-	{#snippet content()}
-		<header class="flex justify-between">
-			<h2 class="h2">Modal Example</h2>
-		</header>
-		<div>
-			<label class="label block">
-				Address Line 1
-				<input
-					class="input w-full rounded-md border border-gray-300 p-2 focus:border-indigo-500 focus:ring-indigo-500"
-					name="lineOne"
-					type="text"
-					aria-invalid={$errors.lineOne ? 'true' : undefined}
-					bind:value={$form.lineOne}
-					{...$constraints.lineOne}
-				/>
-			</label>
-
-			<!-- Address Line 2 -->
-			<label class="label block">
-				Address Line 2 (Apt, Suite, etc.)
-				<input
-					class="input w-full rounded-md border border-gray-300 p-2 focus:border-indigo-500 focus:ring-indigo-500"
-					name="lineTwo"
-					type="text"
-					aria-invalid={$errors.lineTwo ? 'true' : undefined}
-					bind:value={$form.lineTwo}
-					{...$constraints.lineTwo}
-				/>
-			</label>
-
-			<!-- City -->
-			<label class="label block">
-				City / Town *
-				<input
-					class="input w-full rounded-md border border-gray-300 p-2 focus:border-indigo-500 focus:ring-indigo-500"
-					name="city"
-					type="text"
-					aria-invalid={$errors.city ? 'true' : undefined}
-					bind:value={$form.city}
-					{...$constraints.city}
-				/>
-			</label>
-
-			<!-- County -->
-			<label class="label block">
-				County
-				<input
-					class="input w-full rounded-md border border-gray-300 p-2 focus:border-indigo-500 focus:ring-indigo-500"
-					name="county"
-					type="text"
-					aria-invalid={$errors.county ? 'true' : undefined}
-					bind:value={$form.county}
-					{...$constraints.county}
-				/>
-			</label>
-
-			<!-- Eircode -->
-			<label class="label block">
-				Eircode / Postal Code
-				<input
-					class="input w-full rounded-md border border-gray-300 p-2 focus:border-indigo-500 focus:ring-indigo-500"
-					name="eircode"
-					type="text"
-					aria-invalid={$errors.eircode ? 'true' : undefined}
-					bind:value={$form.eircode}
-					{...$constraints.eircode}
-				/>
-			</label>
-
-			<!-- Country -->
-			<label class="label block">
-				Country *
-				<input
-					class="input w-full rounded-md border border-gray-300 p-2 focus:border-indigo-500 focus:ring-indigo-500"
-					name="country"
-					type="text"
-					aria-invalid={$errors.country ? 'true' : undefined}
-					bind:value={$form.country}
-					{...$constraints.country}
-				/>
-			</label>
-		</div>
-		<footer class="flex justify-end gap-4">
-			<button type="button" class="btn preset-tonal" onclick={modalClose}>Cancel</button>
-			<button type="button" class="btn preset-filled" onclick={modalClose}>Confirm</button>
-		</footer>
-	{/snippet}
-</Modal>
