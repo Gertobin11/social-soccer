@@ -48,10 +48,10 @@ model Address {
 model Coordinates {
     id          Int                                   @id @default(autoincrement())
     // using postgis for geospatial enquiries
-    coordinates Unsupported("geography(Point, 4326)")
+    location Unsupported("geography(Point, 4326)")
     address Address?
 
-    @@index([coordinates], type: Gist)
+    @@index([location], type: Gist)
 }
 
 model Session {

@@ -12,7 +12,7 @@ import {
 import { hash } from '@node-rs/argon2';
 import prisma from '$lib/server/prisma';
 import { sendVerificationEmail } from '$lib/server/email';
-import { redirect } from 'sveltekit-flash-message/server';
+import { redirect, setFlash } from 'sveltekit-flash-message/server';
 import { getErrorMessage } from '$lib/client/utils';
 
 export const load: PageServerLoad = async (event) => {
@@ -30,6 +30,7 @@ export const actions: Actions = {
 		const form = await superValidate(event, zod4(signupSchema));
 
 		if (!form.valid) {
+            setFlash({message: "Form is not valid", type: 'error'}, event)
 			return fail(400, { form });
 		}
 
@@ -67,7 +68,7 @@ export const actions: Actions = {
 
             // create the email validation token
 			const token = await createEmailVerificationToken(userID);
-			const url = event.url.origin + '/email-verification/' + token;
+			const url = event.url.origin + '/auth/email-verification/' + token;
 			await sendVerificationEmail(email, url);
 
             // sign the user in to their unverified account

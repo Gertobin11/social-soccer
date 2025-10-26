@@ -29,3 +29,12 @@ export const newPasswordSchema = z
 		message: 'Passwords do not match',
 		path: ['confirmPassword']
 	});
+
+export const addressSchema = z.object({
+	lineOne: z.string(),
+	lineTwo: z.string(),
+	city: z.string(),
+	county: z.string(),
+	country: z.string(),
+	eircode: z.string()
+});

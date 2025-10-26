@@ -10,3 +10,13 @@ export function getErrorMessage(error: any) {
     }
     else return error
 }
+
+export const daysOfTheWeek = [
+	'Monday',
+	'Tuesday',
+	'Wednesday',
+	'Thursday',
+	'Friday',
+	'Saturday',
+	'Sunday'
+] as const;
