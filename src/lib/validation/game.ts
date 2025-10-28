@@ -7,5 +7,6 @@ export const createGameSchema = z.object({
     active: z.boolean().default(true),
     time: z.iso.time(),
     numberOfPlayers: z.number().min(8).max(14).default(8),
-    level: z.enum(Level)
+    level: z.enum(Level),
+    addressID: z.number().nonnegative()
 });

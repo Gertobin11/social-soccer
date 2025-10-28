@@ -36,5 +36,8 @@ export const addressSchema = z.object({
 	city: z.string(),
 	county: z.string(),
 	country: z.string(),
-	eircode: z.string()
+	eircode: z.string(),
+    longitude: z.float32(),
+    latitude: z.float32(),
+    addressID: z.number().optional()
 });

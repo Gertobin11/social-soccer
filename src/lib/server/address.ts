@@ -1,5 +1,10 @@
-import { Prisma } from '@prisma/client';
+import { Prisma, type Address } from '@prisma/client';
 import prisma from './prisma';
+import type { SuperValidated } from 'sveltekit-superforms';
+import { addressSchema } from '$lib/validation/auth';
+import type z from 'zod/v4';
+
+type addressData = z.infer<typeof addressSchema>;
 
 /**
  * Create a new coordinates object in the database using a raw query
@@ -20,17 +25,17 @@ export async function createCoordinates(longitude: number, latitude: number): Pr
 
 	const result = await prisma.$queryRaw<{ id: number }[]>(sql);
 
-    // this will always be present, if not the database will have thrown an error
+	// this will always be present, if not the database will have thrown an error
 	const newCoordinateId = result[0]!.id;
 
 	return newCoordinateId;
 }
 
 /**
- * 
+ *
  * Function that gets a coordinate by its ID
  * @param id the id of the coordinates
- * @returns the coordiantes object 
+ * @returns the coordiantes object
  */
 export async function getCoordinateByID(id: number): Promise<CoordinateWithGeoJSON> {
 	const sql = Prisma.sql`
@@ -55,4 +60,54 @@ export async function getCoordinateByID(id: number): Promise<CoordinateWithGeoJS
 		id: rawData.id,
 		location
 	};
+}
+
+export async function createAddressFromForm(form: SuperValidated<addressData>) {
+    let newAddress: Address
+	let { lineOne, lineTwo, city, county, country, eircode, addressID, latitude, longitude } =
+		form.data;
+
+	const coordinatesID = await createCoordinates(longitude, latitude);
+	let previousCoordiantesID: number | undefined = undefined;
+
+	/*if a previous address was created, get a reference to the old coordinates 
+    and delete it after the new coordinates has been linked
+    */
+	if (addressID) {
+		const address = await prisma.address.findFirst({ where: { id: addressID } });
+		if (address) {
+			previousCoordiantesID = address.coordinatesID;
+		}
+
+		newAddress = await prisma.address.update({
+			where: { id: addressID },
+			data: {
+				lineOne,
+				lineTwo,
+				city,
+				county,
+				country,
+				eircode,
+				coordinates: { connect: { id: coordinatesID } }
+			}
+		});
+
+		if (previousCoordiantesID) {
+			await prisma.coordinates.delete({ where: { id: previousCoordiantesID } });
+		}
+	} else {
+		newAddress = await prisma.address.create({
+			data: {
+				lineOne,
+				lineTwo,
+				city,
+				county,
+				country,
+				eircode,
+				coordinates: { connect: { id: coordinatesID } }
+			}
+		});
+	}
+
+    return newAddress.id
 }

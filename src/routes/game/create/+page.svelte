@@ -28,6 +28,13 @@
 		resetForm: false
 	});
 
+	$effect(() => {
+		if ($addressMessage === 'Address Validated') {
+			addressComplete = true;
+			$addressMessage = '';
+		}
+	});
+
 	let mapElement: HTMLDivElement;
 	let marker: google.maps.marker.AdvancedMarkerElement;
 
@@ -78,11 +85,8 @@
 						$addressForm.country = address.country;
 						$addressForm.eircode = address.eircode;
 
-						for (let value of Object.values($form)) {
-							console.log(value);
-						}
-
-						openState = true;
+						$addressForm.longitude = lng;
+						$addressForm.latitude = lat;
 					} else {
 						console.log('No address results found.');
 					}
@@ -98,12 +102,6 @@
 			};
 		}
 	});
-
-	let openState = $state(false);
-
-	function modalClose() {
-		openState = false;
-	}
 </script>
 
 <!-- a 2 panel layout for large screens and single column for mobiles -->
@@ -116,16 +114,17 @@
 	<!-- the address form -->
 	<div class="col-span-1 flex items-center justify-center">
 		<div class="bg-white p-8 shadow-xl md:max-w-[450px]">
+			<h1 class="h1">Create a Game</h1>
 			{#if !addressComplete}
-				<h1 class="h1">Create a Game</h1>
+				<h2 class="py-3 h2 text-gray-500">Address Details</h2>
 				<form
 					method="POST"
 					action="?/createAddress"
-					use:enhance
+					use:addressEnhance
 					class="flex max-w-80 flex-col gap-3"
 				>
 					{#if $addressMessage}<h3>{$addressMessage}</h3>{/if}
-
+					<!-- Address Line 1-->
 					<label class="label block">
 						Address Line 1 *
 						<input
@@ -202,19 +201,26 @@
 							{...$addressConstraints.country}
 						/>
 					</label>
-                    <div class="my-4 flex justify-center">
+
+					<!-- hidden input for address id -->
+					<input
+						name="addressID"
+						type="hidden"
+						aria-invalid={$addressErrors.addressID ? 'true' : undefined}
+						bind:value={$addressForm.addressID}
+						{...$addressConstraints.addressID}
+					/>
+
+					<div class="my-4 flex justify-center">
 						<button class="btn preset-filled-primary-500">Continue</button>
 					</div>
 				</form>
 			{:else}
-				<form
-					method="POST"
-					action="?/createGame"
-					use:enhance
-					class="flex max-w-80 flex-col gap-3"
-				>
+				<h2 class="py-3 h2 text-gray-500">Game Details</h2>
+				<form method="POST" action="?/createGame" use:enhance class="flex max-w-80 flex-col gap-3">
 					{#if $message}<h3>{$message}</h3>{/if}
 
+					<!-- Day -->
 					<label class="label">
 						Day<br />
 						<select
@@ -230,6 +236,7 @@
 						</select>
 					</label>
 
+					<!-- Time -->
 					<label class="label">
 						Time<br />
 						<input
@@ -243,6 +250,7 @@
 					</label>
 					{#if $errors.time}<span class="text-error-500">{$errors.time}</span>{/if}
 
+					<!-- Level -->
 					<label class="label">
 						Level<br />
 						<select
@@ -259,6 +267,7 @@
 					</label>
 					{#if $errors.level}<span class="text-error-500">{$errors.level}</span>{/if}
 
+					<!-- Number of Players -->
 					<label class="label">
 						No. of PLayers<br />
 						<input
@@ -273,8 +282,13 @@
 					{#if $errors.numberOfPlayers}<span class="text-error-500">{$errors.numberOfPlayers}</span
 						>{/if}
 
-					<div class="my-4 flex justify-center">
-						<button class="btn preset-filled-primary-500">Create</button>
+					<div class="my-4 flex justify-center gap-3">
+						<button
+							type="button"
+							onclick={() => (addressComplete = false)}
+							class="btn preset-filled-error-500">Back</button
+						>
+						<button type="submit" class="btn preset-filled-primary-500">Create</button>
 					</div>
 				</form>
 			{/if}
