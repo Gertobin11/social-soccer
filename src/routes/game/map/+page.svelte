@@ -5,6 +5,7 @@
 	import { getFlash } from 'sveltekit-flash-message';
 	import type { PageProps } from './$types';
 	import * as MarkerClusterer from '@googlemaps/markerclusterer';
+	import Icon from '@iconify/svelte';
 	const flash = getFlash(page);
 
 	let { data }: PageProps = $props();
@@ -12,6 +13,7 @@
 	let currentGameData = $state(data.gameDataArray);
 
 	let mapElement: HTMLDivElement;
+	let legendElement: HTMLDivElement;
 
 	onMount(async () => {
 		try {
@@ -19,9 +21,9 @@
 				key: 'AIzaSyD-N4_aJYEE7htoSQAPugjCxfGIZZroAz0'
 			});
 
-			// import the class for the map, marker and location lookup
+			// import the class for the map AND marker
 			const { Map } = await importLibrary('maps');
-			const { AdvancedMarkerElement } = await importLibrary('marker');
+			const { AdvancedMarkerElement, PinElement } = await importLibrary('marker');
 
 			// initialise the elements
 			const map = new Map(mapElement, {
@@ -30,29 +32,57 @@
 				mapId: 'create-game-map-id'
 			});
 
+			const position = google.maps.ControlPosition.RIGHT_BOTTOM;
+
+			map.controls[position].push(legendElement);
+
 			const infoWindow = new google.maps.InfoWindow({
 				content: '',
 				disableAutoPan: true
 			});
 
 			const markers = currentGameData.map((gameData, i) => {
-				const label = `${gameData.city} - ${gameData.level}`;
-				const pinGlyph = new google.maps.marker.PinElement({
-					glyph: label,
-					glyphColor: 'black'
+				let colour = 'green';
+				switch (gameData.level) {
+					case 'BEGINNER':
+						colour = 'green';
+						break;
+					case 'RECREATIONAL':
+						colour = 'blue';
+						break;
+					case 'INTERMEDITE':
+						colour = 'orange';
+						break;
+					case 'COMPETITIVE':
+						colour = 'red';
+						break;
+					case 'ADVANCED':
+						colour = 'black';
+						break;
+				}
+				const title = `${gameData.city} - ${gameData.level}`;
+				const pinTextGlyph = new PinElement({
+					glyphColor: "white",
+					background: colour,
+					borderColor: 'white',
+                    scale: 1.5
 				});
-				const marker = new google.maps.marker.AdvancedMarkerElement({
+
+				const marker = new AdvancedMarkerElement({
 					position: {
 						lat: Number(gameData.coordinates.location.coordinates[1]),
 						lng: Number(gameData.coordinates.location.coordinates[0])
 					},
-					content: pinGlyph.element
+					map,
+					title
 				});
+
+				marker.append(pinTextGlyph);
 
 				// show the game details when a marker is clicked
 				marker.addListener('click', () => {
 					const addressLineTwo = gameData.lineTwo ? `${gameData.lineTwo}<br>` : '';
-					const joinGameUrl = `/`;
+					const joinGameUrl = `/game/${gameData.id}/join-request`;
 					const contentString = `
                         <div style="font-family: Arial, sans-serif; font-size: 14px; line-height: 1.6; max-width: 280px;">
                             
@@ -103,7 +133,35 @@
 <!-- a 2 panel layout for large screens and single column for mobiles -->
 <section class="grid min-h-[calc(100vh-4rem)] grid-cols-1 md:grid-cols-3">
 	<!-- Map section for picking the address-->
-	<div class="h-full col-span-2">
+	<div class="col-span-2 h-full">
 		<div class="h-full w-full" bind:this={mapElement}></div>
+	</div>
+
+	<!-- legend -->
+	<div
+		bind:this={legendElement}
+		style="padding: 10px; background-color: white; border: 1px solid #ccc; box-shadow: 0 2px 4px rgba(0,0,0,0.1);"
+	>
+		<h3>Map Legend</h3>
+		<div class="flex items-center gap-2">
+			<Icon icon="mdi:location" width="24" height="24" class="text-green-700" />
+			<span>Beginner Locations</span>
+		</div>
+		<div class="flex items-center gap-2">
+			<Icon icon="mdi:location" width="24" height="24" class="text-blue-700" />
+			<span>Recreational Locations</span>
+		</div>
+		<div class="flex items-center gap-2">
+			<Icon icon="mdi:location" width="24" height="24" class="text-orange-700" />
+			<span>Intermediate Locations</span>
+		</div>
+		<div class="flex items-center gap-2">
+			<Icon icon="mdi:location" width="24" height="24" class="text-red-700" />
+			<span>Competitive Locations</span>
+		</div>
+		<div class="flex items-center gap-2">
+			<Icon icon="mdi:location" width="24" height="24" class="text-black-700" />
+			<span>Advanced Locations</span>
+		</div>
 	</div>
 </section>

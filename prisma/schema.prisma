@@ -126,4 +126,6 @@ model RequestToJoin {
 
     game   Game @relation(fields: [gameID], references: [id])
     player User @relation(fields: [playerID], references: [id])
+
+    @@unique([gameID, playerID], name: "requestToPlayer")
 }

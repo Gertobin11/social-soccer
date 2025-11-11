@@ -1,0 +1,153 @@
+<script lang="ts">
+	import SlidingImage from '$lib/components/ui/SlidingImage.svelte';
+	import { onMount } from 'svelte';
+	import type { PageProps } from './$types';
+	import { importLibrary, setOptions } from '@googlemaps/js-api-loader';
+	import Icon from '@iconify/svelte';
+	let { data }: PageProps = $props();
+
+	let mapElement: HTMLDivElement;
+	let marker: google.maps.marker.AdvancedMarkerElement;
+
+	onMount(async () => {
+		setOptions({
+			key: 'AIzaSyD-N4_aJYEE7htoSQAPugjCxfGIZZroAz0'
+		});
+
+		const { Map } = await importLibrary('maps');
+		const { AdvancedMarkerElement } = await importLibrary('marker');
+
+		// initialise the elements
+		const map = new Map(mapElement, {
+			center: {
+				lat: Number(data.gameData.coordinates.location.coordinates[1]),
+				lng: Number(data.gameData.coordinates.location.coordinates[0])
+			},
+			zoom: 14,
+			mapId: 'create-game-map-id'
+		});
+		marker = new AdvancedMarkerElement({
+			position: {
+				lat: Number(data.gameData.coordinates.location.coordinates[1]),
+				lng: Number(data.gameData.coordinates.location.coordinates[0])
+			},
+			map
+		});
+	});
+</script>
+
+<!-- a 2 panel layout for large screens and single column for mobiles -->
+<section class="grid min-h-[calc(100vh-4rem)] grid-cols-1 md:grid-cols-2">
+	<!-- a full screen sliding image -->
+	<div class="h-full">
+		<!-- Photo by Anna Tarazevich: https://www.pexels.com/photo/close-up-shot-of-scrabble-tiles-on-a-white-surface-6230960/ -->
+		<SlidingImage imageSrc="/request-to-join.webp" />
+	</div>
+
+	<!-- show details of the requested game to join-->
+	<div class="col-span-1 flex items-center justify-center">
+		<div class="w-full max-w-4xl overflow-hidden rounded-lg bg-white shadow-xl dark:bg-gray-800">
+			<header class="border-b border-gray-200 p-6 dark:border-gray-700">
+				<h2 class="text-2xl font-bold">Game Details</h2>
+			</header>
+
+			<section class="p-6">
+				<!-- Responsive Grid: 1 col on mobile, 2 cols on desktop -->
+				<div class="grid grid-cols-1 gap-6 md:grid-cols-2">
+					<!-- Left Column: Key Details -->
+					<div class="flex flex-col space-y-6">
+						<!-- Level Chip -->
+						<div>
+							<span class="text-sm font-medium text-gray-500 dark:text-gray-400">Level</span>
+							<div class="ml-2 badge preset-filled-primary-500 text-lg">Intermediate</div>
+						</div>
+
+						<!-- Date & Time -->
+						<div class="grid grid-cols-2 gap-4">
+							<div class="flex items-start space-x-3">
+								<Icon icon="mdi:date-range" width="32" height="32" class="text-primary-500" />
+								<div>
+									<h4 class="text-sm font-medium text-gray-500 dark:text-gray-400">Day</h4>
+									<p class="text-lg font-semibold">{data.gameData.day}</p>
+								</div>
+							</div>
+							<div class="flex items-start space-x-3">
+								<Icon icon="mdi:access-time" width="32" height="32" class="text-primary-500" />
+								<div>
+									<h4 class="text-sm font-medium text-gray-500 dark:text-gray-400">Time</h4>
+									<p class="text-lg font-semibold">{data.gameData.time}</p>
+								</div>
+							</div>
+						</div>
+
+						<div class="grid grid-cols-2 gap-4">
+							<!-- Number of PLayers-->
+							<div class="flex items-start space-x-3">
+								<Icon icon="mdi:user-group" width="32" height="32" class="text-primary-500" />
+								<div>
+									<h4 class="text-sm font-medium text-gray-500 dark:text-gray-400">
+										Number of Players
+									</h4>
+									<p class="text-lg font-semibold">{data.game.numberOfPlayers}</p>
+								</div>
+							</div>
+
+							<!-- Current number of Players-->
+							<div class="flex items-start space-x-3">
+								<Icon
+									icon="mdi:user-group-outline"
+									width="32"
+									height="32"
+									class="text-primary-500"
+								/>
+								<div>
+									<h4 class="text-sm font-medium text-gray-500 dark:text-gray-400">
+										Current Player Count
+									</h4>
+									<p class="text-lg font-semibold">{data.game.players.length}</p>
+								</div>
+							</div>
+						</div>
+
+						<!-- Address -->
+						<div class="flex items-start space-x-3">
+							<Icon icon="mdi:location" width="32" height="32" class="text-primary-500" />
+							<div>
+								<h4 class="text-sm font-medium text-gray-500 dark:text-gray-400">Location</h4>
+								<address class="text-lg font-semibold not-italic">
+									{data.gameData.lineOne}<br />
+									{#if data.gameData.lineTwo}
+										{data.gameData.lineTwo}<br />
+									{/if}
+									{data.gameData.city}<br />
+									{data.gameData.county}<br />
+									{data.gameData.country}<br />
+									{data.gameData.eircode}
+								</address>
+							</div>
+						</div>
+					</div>
+
+					<!-- Right Column: Map Placeholder -->
+					<div class="h-64 w-full overflow-hidden rounded-lg md:h-full">
+						<div class="h-full w-full" bind:this={mapElement}></div>
+					</div>
+				</div>
+			</section>
+
+			<footer
+				class="flex flex-col items-center justify-between gap-4 border-t border-gray-200 bg-gray-50 p-6 sm:flex-row dark:border-gray-700 dark:bg-gray-800/50"
+			>
+				<p class="text-center text-sm text-gray-600 sm:text-left dark:text-gray-400">
+					Ready to play? Joining sends a request to the host.
+				</p>
+				<form method="POST">
+					<button type="submit" class="btn flex justify-between preset-filled-primary-500">
+						<Icon icon="mdi:account-add-outline" width="32" height="32" />
+						Request to Join
+					</button>
+				</form>
+			</footer>
+		</div>
+	</div>
+</section>

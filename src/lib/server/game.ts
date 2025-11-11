@@ -41,6 +41,7 @@ export async function getLatestGames(limit: number) {
 
 // used for showing games in Google Maps API
 export type GameData = {
+	id: number;
 	coordinates: CoordinateWithGeoJSON;
 	day: string;
 	time: string;
@@ -56,6 +57,7 @@ export type GameData = {
 export async function buildGameDataForMap(game: Game): Promise<GameData> {
 	const address = await getAddressByID(game.locationID);
 	const gameData: GameData = {
+		id: game.id,
 		level: game.level,
 		day: game.day,
 		time: game.time,
@@ -69,4 +71,56 @@ export async function buildGameDataForMap(game: Game): Promise<GameData> {
 	};
 
 	return gameData;
+}
+
+export async function addPlayerToGame(gameID: number, userID: string) {
+	return await prisma.game.update({
+		where: {
+			id: gameID
+		},
+		data: {
+			players: {
+				connect: {
+					id: userID
+				}
+			}
+		}
+	});
+}
+
+export async function createRequestToJoin(gameID: number, userID: string) {
+    await prisma.requestToJoin.create({
+        data: {
+            gameID,
+            playerID: userID
+        }
+    });
+}
+
+export async function verifyRequestToJoinIsUnique(gameID: number, userID: string) {
+    const previousRequest = await prisma.requestToJoin.findUnique({
+        where: {
+            requestToPlayer: { gameID, playerID: userID }
+        }
+    });
+
+    if (previousRequest) {
+        throw new Error("User already has a request to join this game");
+    }
+}
+
+export async function getGameWithPLayers(gameID: number) {
+    const game = await prisma.game.findUnique({
+        where: {
+            id: gameID
+        },
+        include: {
+            players: true
+        }
+    });
+
+    if (!game) {
+        throw new Error(`Unable to find game with an id of: ${gameID}`);
+    }
+    return game;
 }
