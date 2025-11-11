@@ -32,3 +32,4 @@ interface StructuredAddress {
     country: string;
     eircode: string;
 }
+

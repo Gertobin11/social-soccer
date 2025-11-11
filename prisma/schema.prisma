@@ -29,27 +29,28 @@ model User {
     waitingLists       Game[]               @relation()
     ratings            Rating[]
     emailVerification  EmailVerification[]
+    requestsToJoin RequestToJoin[]
 }
 
 model Address {
-    id      Int    @id @default(autoincrement())
-    lineOne String
-    lineTwo String
-    city    String
-    county  String
-    country String
-    eircode String
-    coordinatesID Int @unique
+    id            Int    @id @default(autoincrement())
+    lineOne       String
+    lineTwo       String
+    city          String
+    county        String
+    country       String
+    eircode       String
+    coordinatesID Int    @unique
 
-    users User[]
+    users       User[]
     coordinates Coordinates @relation(fields: [coordinatesID], references: [id], onDelete: Cascade)
 }
 
 model Coordinates {
-    id          Int                                   @id @default(autoincrement())
+    id       Int                                   @id @default(autoincrement())
     // using postgis for geospatial enquiries
     location Unsupported("geography(Point, 4326)")
-    address Address?
+    address  Address?
 
     @@index([location], type: Gist)
 }
@@ -87,18 +88,21 @@ enum Level {
 }
 
 model Game {
-    id              Int     @id @default(autoincrement())
+    id              Int      @id @default(autoincrement())
     organiserID     String
     locationID      Int
     time            String
     day             String
     numberOfPlayers Int
     active          Boolean
+    createdOn       DateTime @default(now())
 
     level       Level
     players     User[]   @relation("playersInGame")
     waitingList User[]
     rating      Rating[]
+
+    requestsToJoin RequestToJoin[]
 }
 
 model Rating {
@@ -108,6 +112,17 @@ model Rating {
     gameID   Int
     rating   Int
     ratedOn  DateTime @default(now())
+
+    game   Game @relation(fields: [gameID], references: [id])
+    player User @relation(fields: [playerID], references: [id])
+}
+
+model RequestToJoin {
+    id       Int      @id @default(autoincrement())
+    gameID   Int
+    playerID   String
+    createdOn  DateTime @default(now())
+    accepted Boolean?
 
     game   Game @relation(fields: [gameID], references: [id])
     player User @relation(fields: [playerID], references: [id])

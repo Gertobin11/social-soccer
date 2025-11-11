@@ -30,8 +30,13 @@
 
 	$effect(() => {
 		if ($addressMessage === 'Address Validated') {
+            console.log($addressForm.city)
+            console.log($addressForm.addressID)
 			addressComplete = true;
 			$addressMessage = '';
+			if ($addressForm.addressID) {
+				$form.addressID = $addressForm.addressID;
+			}
 		}
 	});
 
@@ -211,6 +216,24 @@
 						{...$addressConstraints.addressID}
 					/>
 
+                    <!-- hidden input for latitude -->
+					<input
+						name="latitude"
+						type="hidden"
+						aria-invalid={$addressErrors.latitude ? 'true' : undefined}
+						bind:value={$addressForm.latitude}
+						{...$addressConstraints.latitude}
+					/>
+
+                     <!-- hidden input for longitude -->
+					<input
+						name="longitude"
+						type="hidden"
+						aria-invalid={$addressErrors.longitude ? 'true' : undefined}
+						bind:value={$addressForm.longitude}
+						{...$addressConstraints.longitude}
+					/>
+
 					<div class="my-4 flex justify-center">
 						<button class="btn preset-filled-primary-500">Continue</button>
 					</div>
@@ -281,6 +304,16 @@
 					</label>
 					{#if $errors.numberOfPlayers}<span class="text-error-500">{$errors.numberOfPlayers}</span
 						>{/if}
+
+                        <!-- hidden input for address id in the create game form -->
+					<input
+						name="addressID"
+						type="hidden"
+						aria-invalid={$errors.addressID ? 'true' : undefined}
+						bind:value={$form.addressID}
+						{...$constraints.addressID}
+					/>
+
 
 					<div class="my-4 flex justify-center gap-3">
 						<button

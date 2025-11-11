@@ -3,6 +3,7 @@ import prisma from './prisma';
 import type { SuperValidated } from 'sveltekit-superforms';
 import { addressSchema } from '$lib/validation/auth';
 import type z from 'zod/v4';
+import { encrypt } from './encryption';
 
 type addressData = z.infer<typeof addressSchema>;
 
@@ -62,8 +63,14 @@ export async function getCoordinateByID(id: number): Promise<CoordinateWithGeoJS
 	};
 }
 
+/**
+ * Function that either creates a new address, which is encryped, or if there is a previous addrees, it updates the address with
+ * the new coordinates, then deletes the old cordinates
+ * @param form The submitted supervalidated form
+ * @returns
+ */
 export async function createAddressFromForm(form: SuperValidated<addressData>) {
-    let newAddress: Address
+	let newAddress: Address;
 	let { lineOne, lineTwo, city, county, country, eircode, addressID, latitude, longitude } =
 		form.data;
 
@@ -82,12 +89,12 @@ export async function createAddressFromForm(form: SuperValidated<addressData>) {
 		newAddress = await prisma.address.update({
 			where: { id: addressID },
 			data: {
-				lineOne,
-				lineTwo,
-				city,
-				county,
-				country,
-				eircode,
+				lineOne: encrypt(lineOne),
+				lineTwo: encrypt(lineTwo),
+				city: encrypt(city),
+				county: encrypt(county),
+				country: encrypt(country),
+				eircode: encrypt(eircode),
 				coordinates: { connect: { id: coordinatesID } }
 			}
 		});
@@ -98,16 +105,26 @@ export async function createAddressFromForm(form: SuperValidated<addressData>) {
 	} else {
 		newAddress = await prisma.address.create({
 			data: {
-				lineOne,
-				lineTwo,
-				city,
-				county,
-				country,
-				eircode,
+				lineOne: encrypt(lineOne),
+				lineTwo: encrypt(lineTwo),
+				city: encrypt(city),
+				county: encrypt(county),
+				country: encrypt(country),
+				eircode: encrypt(eircode),
 				coordinates: { connect: { id: coordinatesID } }
 			}
 		});
 	}
 
-    return newAddress.id
+	return newAddress.id;
+}
+
+export async function getAddressByID(id: number) {
+	const address = await prisma.address.findUnique({
+		where: { id }
+	});
+	if (!address) {
+		throw new Error(`Address with an id: ${id} not found`);
+	}
+	return address;
 }

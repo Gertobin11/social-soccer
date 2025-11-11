@@ -46,6 +46,8 @@
 	>
 	<div class="flex shrink justify-evenly gap-2 text-lg text-surface-800">
 		{#if data.session}
+            <a class="hover:text-black hover:underline" href="/game/map">View Games</a>
+            <a class="hover:text-black hover:underline" href="/game/create">Create Game</a>
 			<a class="hover:text-black hover:underline" href="/">My Games</a>
 			<Logout />
 		{:else}
