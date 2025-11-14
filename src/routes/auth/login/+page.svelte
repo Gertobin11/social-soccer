@@ -34,7 +34,7 @@
 			method="POST"
 			action="?/login"
 			use:enhance
-			class="flex max-w-80 flex-col gap-3 bg-white p-8 shadow-xl md:max-w-[400px]"
+			class="flex max-w-80 flex-col gap-3 bg-white p-8 shadow-xl rounded md:max-w-[400px]"
 		>
 			<h1 class="h1">Log In</h1>
 			{#if $message}<h3>{$message}</h3>{/if}

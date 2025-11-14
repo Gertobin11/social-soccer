@@ -30,8 +30,9 @@ export async function createGameFromForm(
 			numberOfPlayers,
 			organiserID,
 			level,
-			locationID: addressID
-		}
+			locationID: addressID,
+            players: {connect: {id: organiserID}}
+		},
 	});
 }
 

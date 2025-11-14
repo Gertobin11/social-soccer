@@ -3,9 +3,19 @@ import prisma from './prisma';
 import type { SuperValidated } from 'sveltekit-superforms';
 import { addressSchema } from '$lib/validation/auth';
 import type z from 'zod/v4';
-import { encrypt } from './encryption';
+import { decrypt, encrypt } from './encryption';
 
-type addressData = z.infer<typeof addressSchema>;
+export type AddressData = z.infer<typeof addressSchema>;
+
+type AddressFields = {
+    addressID?: number;
+	lineOne: string;
+	lineTwo: string;
+	city: string;
+	county: string;
+	country: string;
+	eircode: string;
+};
 
 /**
  * Create a new coordinates object in the database using a raw query
@@ -69,48 +79,26 @@ export async function getCoordinateByID(id: number): Promise<CoordinateWithGeoJS
  * @param form The submitted supervalidated form
  * @returns
  */
-export async function createAddressFromForm(form: SuperValidated<addressData>) {
+export async function createAddressFromForm(form: SuperValidated<AddressData>) {
 	let newAddress: Address;
-	let { lineOne, lineTwo, city, county, country, eircode, addressID, latitude, longitude } =
-		form.data;
+	let { latitude, longitude, ...data } = form.data;
 
 	const coordinatesID = await createCoordinates(longitude, latitude);
-	let previousCoordiantesID: number | undefined = undefined;
 
 	/*if a previous address was created, get a reference to the old coordinates 
     and delete it after the new coordinates has been linked
     */
-	if (addressID) {
-		const address = await prisma.address.findFirst({ where: { id: addressID } });
-		if (address) {
-			previousCoordiantesID = address.coordinatesID;
-		}
-
-		newAddress = await prisma.address.update({
-			where: { id: addressID },
-			data: {
-				lineOne: encrypt(lineOne),
-				lineTwo: encrypt(lineTwo),
-				city: encrypt(city),
-				county: encrypt(county),
-				country: encrypt(country),
-				eircode: encrypt(eircode),
-				coordinates: { connect: { id: coordinatesID } }
-			}
-		});
-
-		if (previousCoordiantesID) {
-			await prisma.coordinates.delete({ where: { id: previousCoordiantesID } });
-		}
+	if (data.addressID) {
+		newAddress = await updateAddress(data, coordinatesID);
 	} else {
 		newAddress = await prisma.address.create({
 			data: {
-				lineOne: encrypt(lineOne),
-				lineTwo: encrypt(lineTwo),
-				city: encrypt(city),
-				county: encrypt(county),
-				country: encrypt(country),
-				eircode: encrypt(eircode),
+				lineOne: encrypt(data.lineOne),
+				lineTwo: encrypt(data.lineTwo),
+				city: encrypt(data.city),
+				county: encrypt(data.county),
+				country: encrypt(data.country),
+				eircode: encrypt(data.eircode),
 				coordinates: { connect: { id: coordinatesID } }
 			}
 		});
@@ -119,6 +107,40 @@ export async function createAddressFromForm(form: SuperValidated<addressData>) {
 	return newAddress.id;
 }
 
+async function updateAddress(
+	data: AddressFields,
+	coordinatesID: number
+) {
+	let previousCoordiantesID: number | undefined = undefined;
+	const address = await prisma.address.findFirst({ where: { id: data.addressID } });
+	if (address) {
+		previousCoordiantesID = address.coordinatesID;
+	}
+
+	let newAddress = await prisma.address.update({
+		where: { id: data.addressID },
+		data: {
+			lineOne: encrypt(data.lineOne),
+			lineTwo: encrypt(data.lineTwo),
+			city: encrypt(data.city),
+			county: encrypt(data.county),
+			country: encrypt(data.country),
+			eircode: encrypt(data.eircode),
+			coordinates: { connect: { id: coordinatesID } }
+		}
+	});
+
+	if (previousCoordiantesID) {
+		await prisma.coordinates.delete({ where: { id: previousCoordiantesID } });
+	}
+	return newAddress;
+}
+
+/**
+ * Function that returns the address of the id passed, or throws an error if it is not found
+ * @param id the id of the address 
+ * @returns an Address object
+ */
 export async function getAddressByID(id: number) {
 	const address = await prisma.address.findUnique({
 		where: { id }
@@ -127,4 +149,38 @@ export async function getAddressByID(id: number) {
 		throw new Error(`Address with an id: ${id} not found`);
 	}
 	return address;
+}
+/**
+ * Function that takes an encrypted address stored in the database
+ * and returns the parts needed for display
+ * @param encryptedAddress An encrypted address stored in the database
+ * @returns a decrypted address object
+ */
+export function getDecryptedAddress(encryptedAddress: Address) {
+	const decryptedAddress: Partial<Address> = {
+		lineOne: decrypt(encryptedAddress.lineOne),
+		lineTwo: decrypt(encryptedAddress.lineTwo),
+		city: decrypt(encryptedAddress.city),
+		county: decrypt(encryptedAddress.county),
+		country: decrypt(encryptedAddress.country),
+		eircode: decrypt(encryptedAddress.eircode)
+	};
+	return decryptedAddress;
+}
+
+/**
+ * Function that creates new coordinates from the form and then 
+ * updates the address and connects it with the new coordinates
+ * @param form a Supervalidated Address form 
+ * @returns the id of the updated address
+ */
+export async function updateAddressFromForm(form: SuperValidated<AddressData>) {
+	let {  latitude, longitude, ...data } =
+		form.data;
+
+	const coordinatesID = await createCoordinates(longitude, latitude);
+
+	const updatedAddress = await updateAddress(data, coordinatesID)
+
+	return updatedAddress.id;
 }

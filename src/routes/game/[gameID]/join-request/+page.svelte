@@ -46,7 +46,7 @@
 
 	<!-- show details of the requested game to join-->
 	<div class="col-span-1 flex items-center justify-center">
-		<div class="w-full max-w-4xl overflow-hidden rounded-lg bg-white shadow-xl dark:bg-gray-800">
+		<div class="w-full max-w-4xl overflow-hidden rounded-lg bg-white shadow-xl">
 			<header class="border-b border-gray-200 p-6 dark:border-gray-700">
 				<h2 class="text-2xl font-bold">Game Details</h2>
 			</header>

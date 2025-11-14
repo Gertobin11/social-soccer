@@ -32,20 +32,23 @@ export const actions: Actions = {
 				event
 			);
 		}
+		const addressForm = await superValidate(event, zod4(addressSchema));
 
-        const addressForm = await superValidate(event, zod4(addressSchema))
+		if (!addressForm.valid) {
+			return fail(400, { addressForm, message: 'Form not valid' });
+		}
+		// handle any unexpected issues writing to the database
+		try {
+			const addressID = await createAddressFromForm(addressForm);
+			addressForm.data.addressID = addressID;
 
-        if(!addressForm.valid) {
-            return fail(400, {addressForm, message: "Form not valid"})
-        }
-
-        const addressID = await createAddressFromForm(addressForm)
-        addressForm.data.addressID = addressID
-
-        return message(addressForm, "Address Validated")
+			return message(addressForm, 'Address Validated');
+		} catch (error) {
+			return fail(500, { addressForm, message: 'Unexpected Error, please contact support' });
+		}
 	},
 
-    createGame: async (event) => {
+	createGame: async (event) => {
 		// redirect to the homepage if the user is not signed in
 		if (!event.locals.session) {
 			return redirect(
@@ -55,23 +58,27 @@ export const actions: Actions = {
 			);
 		}
 
-         const userID = event.locals.user?.id
-        if(!userID) {
-            return redirect(
+		const userID = event.locals.user?.id;
+		if (!userID) {
+			return redirect(
 				'/',
 				{ type: 'error', message: 'No record of user in the logged in session' },
 				event
 			);
-        }
+		}
 
-        const gameDetailsForm = await superValidate(event, zod4(createGameSchema))
+		const gameDetailsForm = await superValidate(event, zod4(createGameSchema));
 
-        if(!gameDetailsForm.valid) {
-            return fail(400, {gameDetailsForm, message: "Form not valid"})
-        }
+		// handle any unexpected issues writing to the database
+		if (!gameDetailsForm.valid) {
+			return fail(400, { gameDetailsForm, message: 'Form not valid' });
+		}
+		try {
+			await createGameFromForm(gameDetailsForm, userID);
+		} catch (error) {
+			return fail(500, { gameDetailsForm, message: 'Unexpected Error, please contact support' });
+		}
 
-        await createGameFromForm(gameDetailsForm, userID)
-
-        return redirect("/", {type: "success", message: "Game Created Successfully!"}, event)
+		return redirect('/', { type: 'success', message: 'Game Created Successfully!' }, event);
 	}
 };
