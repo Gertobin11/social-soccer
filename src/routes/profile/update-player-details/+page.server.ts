@@ -41,7 +41,7 @@ export const load: PageServerLoad = async (event) => {
 };
 
 export const actions: Actions = {
-	createAddress: async (event) => {
+	updateUserDetailss: async (event) => {
 		// redirect to the homepage if the user is not signed in
 		if (!event.locals.session) {
 			return redirect(

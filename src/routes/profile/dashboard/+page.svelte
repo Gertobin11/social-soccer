@@ -13,17 +13,17 @@
 		</div>
 		<div class="grid grid-cols-4 gap-x-4">
 			<p class="col-span-1 text-sm font-medium text-gray-500">Email</p>
-			<p class="col-span-3 text-lg text-black">{data.user.email}</p>
+			<p class="col-span-3 text-lg text-black">{data.userDetails.email}</p>
 
 			<p class="col-span-1 text-sm font-medium text-gray-500">First Name</p>
-			<p class="col-span-3 text-lg text-black">{data.user.firstName}</p>
+			<p class="col-span-3 text-lg text-black">{data.userDetails.firstName}</p>
 
 			<p class="col-span-1 text-sm font-medium text-gray-500">Last Name</p>
-			<p class="col-span-3 text-lg text-black">{data.user.lastName}</p>
+			<p class="col-span-3 text-lg text-black">{data.userDetails.lastName}</p>
 
 			<p class="col-span-1 text-sm font-medium text-gray-500">Email Verified?</p>
 			<p class="col-span-3 text-lg text-black">
-				{data.user.emailVerified ? 'yes' : 'no'}
+				{data.userDetails.emailVerified ? 'yes' : 'no'}
 			</p>
 		</div>
 		<div class="mt-3 flex justify-center">

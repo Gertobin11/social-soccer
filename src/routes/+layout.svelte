@@ -48,7 +48,7 @@
 		{#if data.session}
             <a class="hover:text-black hover:underline" href="/game/map">View Games</a>
             <a class="hover:text-black hover:underline" href="/game/create">Create Game</a>
-			<a class="hover:text-black hover:underline" href="/">My Games</a>
+			<a class="hover:text-black hover:underline" href="/profile/dashboard">My Profile</a>
 			<Logout />
 		{:else}
 			<a class="hover:text-black hover:underline" href="/auth/login">Login</a>

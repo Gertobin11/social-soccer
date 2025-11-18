@@ -1,3 +1,4 @@
+import { encrypt } from '$lib/server/encryption';
 import prisma from '../server/prisma';
 
 export async  function addNamesToUser(userID: string, firstName: string, lastName: string) {
@@ -6,8 +7,8 @@ export async  function addNamesToUser(userID: string, firstName: string, lastNam
             id: userID
         },
         data:{
-            firstName,
-            lastName
+            firstName: encrypt(firstName),
+            lastName: encrypt(lastName)
         }
     })
 }

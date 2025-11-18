@@ -4,6 +4,7 @@ import type { PageServerLoad } from './$types';
 import type { Address } from '@prisma/client';
 import { getDecryptedAddress } from '$lib/server/address';
 import { getUserByID } from '$lib/orm/user';
+import { getDecryptedUserDetails } from '$lib/server/user';
 
 export const load: PageServerLoad = async (event) => {
 	// redirect to the homepage if the user is not signed in
@@ -28,7 +29,9 @@ export const load: PageServerLoad = async (event) => {
 			address = getDecryptedAddress(user.address);
 		}
 
-		return { user, address };
+        const userDetails = await getDecryptedUserDetails(user)
+
+		return { userDetails, address };
 	} catch (error) {
 		return redirect(
 			'/',
