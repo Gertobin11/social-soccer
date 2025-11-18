@@ -1,6 +1,7 @@
 import { getErrorMessage } from '$lib/client/utils';
-import { deleteSessionTokenCookie, invalidateSession } from '$lib/server/auth';
-import { getUserByID } from '$lib/server/user';
+import { invalidateSession } from '$lib/orm/auth';
+import { getUserByID } from '$lib/orm/user';
+import { deleteSessionTokenCookie} from '$lib/server/auth';
 import { fail, type Actions } from '@sveltejs/kit';
 
 import { redirect } from 'sveltekit-flash-message/server';

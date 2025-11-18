@@ -4,7 +4,7 @@ import { fail, superValidate } from 'sveltekit-superforms';
 import { zod4 } from 'sveltekit-superforms/adapters';
 import { addressSchema } from '$lib/validation/auth';
 import { createAddressFromForm } from '$lib/server/address';
-import { addAddressToUser } from '$lib/server/user';
+import { addAddressToUser } from '$lib/orm/user';
 
 export const load: PageServerLoad = async (event) => {
 	// redirect to the homepage if the user is not signed in

@@ -2,10 +2,10 @@ import type { createGameSchema } from '$lib/validation/game';
 import type { SuperValidated } from 'sveltekit-superforms';
 
 import type z from 'zod/v4';
-import prisma from './prisma';
 import type { Game, Level } from '@prisma/client';
-import { getAddressByID, getCoordinateByID } from './address';
 import { decrypt } from './encryption';
+import { createGame, getGameByID, getRequestToJoin } from '$lib/orm/game';
+import { getAddressByID, getCoordinateByID } from '$lib/orm/address';
 
 type createGameData = z.infer<typeof createGameSchema>;
 
@@ -22,22 +22,7 @@ export async function createGameFromForm(
 ) {
 	let { day, active, time, numberOfPlayers, level, addressID } = form.data;
 
-	await prisma.game.create({
-		data: {
-			day,
-			active,
-			time,
-			numberOfPlayers,
-			organiserID,
-			level,
-			locationID: addressID,
-            players: {connect: {id: organiserID}}
-		},
-	});
-}
-
-export async function getLatestGames(limit: number) {
-	return await prisma.game.findMany({ take: limit, orderBy: { createdOn: 'desc' } });
+	await createGame(day, active, time, numberOfPlayers, organiserID, level, addressID);
 }
 
 // used for showing games in Google Maps API
@@ -74,51 +59,17 @@ export async function buildGameDataForMap(game: Game): Promise<GameData> {
 	return gameData;
 }
 
-export async function addPlayerToGame(gameID: number, userID: string) {
-	return await prisma.game.update({
-		where: {
-			id: gameID
-		},
-		data: {
-			players: {
-				connect: {
-					id: userID
-				}
-			}
-		}
-	});
-}
-
-export async function createRequestToJoin(gameID: number, userID: string) {
-    await prisma.requestToJoin.create({
-        data: {
-            gameID,
-            playerID: userID
-        }
-    });
-}
-
 export async function verifyRequestToJoinIsUnique(gameID: number, userID: string) {
-    const previousRequest = await prisma.requestToJoin.findUnique({
-        where: {
-            requestToPlayer: { gameID, playerID: userID }
-        }
-    });
+    const previousRequest = await getRequestToJoin(gameID, userID);
 
     if (previousRequest) {
         throw new Error("User already has a request to join this game");
     }
 }
 
+
 export async function getGameWithPLayers(gameID: number) {
-    const game = await prisma.game.findUnique({
-        where: {
-            id: gameID
-        },
-        include: {
-            players: true
-        }
-    });
+    const game = await getGameByID(gameID);
 
     if (!game) {
         throw new Error(`Unable to find game with an id of: ${gameID}`);

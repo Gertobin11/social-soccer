@@ -3,8 +3,9 @@ import type { Actions, PageServerLoad } from './$types';
 import { fail, superValidate } from 'sveltekit-superforms';
 import { zod4 } from 'sveltekit-superforms/adapters';
 import { addressSchema } from '$lib/validation/auth';
-import { createAddressFromForm, getCoordinateByID, getDecryptedAddress } from '$lib/server/address';
-import { addAddressToUser, getUserByID } from '$lib/server/user';
+import { createAddressFromForm, getDecryptedAddress } from '$lib/server/address';
+import { addAddressToUser, getUserByID } from '$lib/orm/user';
+import { getCoordinateByID } from '$lib/orm/address';
 
 export const load: PageServerLoad = async (event) => {
 	// redirect to the homepage if the user is not signed in
@@ -49,7 +50,7 @@ export const load: PageServerLoad = async (event) => {
 	} catch (error) {
 		return redirect(
 			'/',
-			{ type: 'error', message: 'Unable to load update address form , please contact support' },
+			{ type: 'error', message: 'Unable to load update address form, please contact support' },
 			event
 		);
 	}
@@ -82,7 +83,7 @@ export const actions: Actions = {
 
 		return redirect(
 			'/profile/dashboard',
-			{ type: 'success', message: 'You must be signed in to view this page' },
+			{ type: 'success', message: 'Address updated successsfully' },
 			event
 		);
 	}

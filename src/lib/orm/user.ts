@@ -1,4 +1,16 @@
-import prisma from './prisma';
+import prisma from '../server/prisma';
+
+export async  function addNamesToUser(userID: string, firstName: string, lastName: string) {
+    await prisma.user.update({
+        where: {
+            id: userID
+        },
+        data:{
+            firstName,
+            lastName
+        }
+    })
+}
 
 /**
  * function that looks up a user object by its id
@@ -14,7 +26,8 @@ export async function getUserByID(id: string) {
 			emailVerification: true,
 			sessions: true,
 			passwordResetToken: true,
-            address: true
+            address: true,
+            games: true
 		}
 	});
 }

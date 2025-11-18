@@ -1,38 +1,31 @@
 <script lang="ts">
+	import Icon from '@iconify/svelte';
 	import type { PageProps } from './$types';
 
 	let { data }: PageProps = $props();
 </script>
 
 <section class="grid h-full w-full grid-cols-3 gap-4 md:p-32">
-	<div class="col-span-1 flex flex-col rounded bg-white p-8 shadow-xl">
-		<h2 class="text-2xl font-bold">Player Details</h2>
-		<ul>
-			<li>
-				<p class="text-lg text-black">
-					<span class="mr-4 text-sm font-medium text-gray-500">Email</span>{data.user.email}
-				</p>
-			</li>
-			<li>
-				<p class="text-lg text-black">
-					<span class="mr-4 text-sm font-medium text-gray-500">First Name</span>{data.user
-						.firstName}
-				</p>
-			</li>
-			<li>
-				<p class="text-lg text-black">
-					<span class="mr-4 text-sm font-medium text-gray-500">Last Name</span>{data.user.lastName}
-				</p>
-			</li>
-			<li>
-				<p class="text-lg text-black">
-					<span class="mr-4 text-sm font-medium text-gray-500">Email Verified?</span>{data.user
-						.emailVerified
-						? 'yes'
-						: 'no'}
-				</p>
-			</li>
-		</ul>
+	<div class="col-span-1 flex flex-col rounded bg-white p-8 shadow-2xl">
+		<div class="mb-3 flex items-start gap-1">
+			<Icon icon="tdesign:user" width="24" height="24" class="text-primary-500" />
+			<h2 class="text-2xl font-bold">Player Details</h2>
+		</div>
+		<div class="grid grid-cols-4 gap-x-4">
+			<p class="col-span-1 text-sm font-medium text-gray-500">Email</p>
+			<p class="col-span-3 text-lg text-black">{data.user.email}</p>
+
+			<p class="col-span-1 text-sm font-medium text-gray-500">First Name</p>
+			<p class="col-span-3 text-lg text-black">{data.user.firstName}</p>
+
+			<p class="col-span-1 text-sm font-medium text-gray-500">Last Name</p>
+			<p class="col-span-3 text-lg text-black">{data.user.lastName}</p>
+
+			<p class="col-span-1 text-sm font-medium text-gray-500">Email Verified?</p>
+			<p class="col-span-3 text-lg text-black">
+				{data.user.emailVerified ? 'yes' : 'no'}
+			</p>
+		</div>
 		<div class="mt-3 flex justify-center">
 			<a href="/profile/update-player-details" class="btn preset-filled-primary-500">Update</a>
 		</div>
@@ -43,22 +36,31 @@
 	</div>
 
 	<div class="col-span-1 rounded bg-white p-8 shadow-xl">
-		<h2 class="text-2xl font-bold">Address</h2>
+		<div class="mb-3 flex items-start gap-1">
+			<Icon icon="mdi:location" width="24" height="24" class="text-primary-500" />
+			<h2 class="flex h-8 items-start text-2xl font-bold">Address</h2>
+		</div>
 		{#if data.address}
-			<address class="text-lg font-semibold not-italic">
-				<span class="mr-4 text-sm font-medium text-gray-500">Line One</span>{data.address
-					.lineOne}<br />
+			<div class="grid grid-cols-4 text-lg font-semibold not-italic">
+				<p class="col-span-1 text-sm font-medium text-gray-500">Line One</p>
+				<p class="col-span-3">{data.address.lineOne}</p>
 				{#if data.address.lineTwo}
-					<span class="mr-4 text-sm font-medium text-gray-500">Line Two</span>{data.address
-						.lineTwo}<br />
+					<p class="col-span-1 text-sm font-medium text-gray-500">Line Two</p>
+					<p class="col-span-3">{data.address.lineTwo}</p>
 				{/if}
-				<span class="mr-4 text-sm font-medium text-gray-500">City</span>{data.address.city}<br />
-				<span class="mr-4 text-sm font-medium text-gray-500">County</span>{data.address.county}<br
-				/>
-				<span class="mr-4 text-sm font-medium text-gray-500">Country</span>{data.address.country}<br
-				/>
-				<span class="mr-4 text-sm font-medium text-gray-500">Eircode?</span>{data.address.eircode}
-			</address>
+
+				<p class="col-span-1 text-sm font-medium text-gray-500">City</p>
+				<p class="col-span-3">{data.address.city}</p>
+
+				<p class="col-span-1 text-sm font-medium text-gray-500">County</p>
+				<p class="col-span-3">{data.address.county}</p>
+
+				<p class="col-span-1 text-sm font-medium text-gray-500">Country</p>
+				<p class="col-span-3">{data.address.country}</p>
+
+				<p class="col-span-1 text-sm font-medium text-gray-500">Eircode?</p>
+				<p class="col-span-3">{data.address.eircode}</p>
+			</div>
 			<div class="mt-3 flex justify-center">
 				<a href="/profile/update-address" class="btn preset-filled-primary-500">Update</a>
 			</div>

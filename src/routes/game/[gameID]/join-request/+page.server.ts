@@ -2,11 +2,11 @@ import type { Actions, PageServerLoad } from './$types';
 import { redirect } from 'sveltekit-flash-message/server';
 import {
 	buildGameDataForMap,
-	createRequestToJoin,
 	getGameWithPLayers,
 	verifyRequestToJoinIsUnique
 } from '$lib/server/game';
 import { getErrorMessage } from '$lib/client/utils';
+import { createRequestToJoin } from '$lib/orm/game';
 
 export const load: PageServerLoad = async (event) => {
 	// redirect to the homepage if the user is not signed in

@@ -41,3 +41,10 @@ export const addressSchema = z.object({
     latitude: z.float32(),
     addressID: z.number().optional()
 });
+
+export type AddressData = z.infer<typeof addressSchema>;
+
+export const profileSchema = z.object({
+    firstName: z.string(),
+    lastName: z.string()
+})

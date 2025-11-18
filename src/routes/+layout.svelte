@@ -56,6 +56,6 @@
 		{/if}
 	</div>
 </nav>
-<div class="mt-16">
+<div class="mt-16 bg-center bg-[url('/background.webp')] min-h-[90vh]">
 	{@render children?.()}
 </div>

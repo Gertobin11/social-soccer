@@ -1,10 +1,9 @@
 import { getErrorMessage } from '$lib/client/utils';
 import { redirect } from 'sveltekit-flash-message/server';
 import type { PageServerLoad } from './$types';
-import prisma from '$lib/server/prisma';
 import type { Address } from '@prisma/client';
-import { decrypt } from '$lib/server/encryption';
 import { getDecryptedAddress } from '$lib/server/address';
+import { getUserByID } from '$lib/orm/user';
 
 export const load: PageServerLoad = async (event) => {
 	// redirect to the homepage if the user is not signed in
@@ -17,10 +16,7 @@ export const load: PageServerLoad = async (event) => {
 	}
 
 	try {
-		const user = await prisma.user.findUnique({
-			where: { id: event.locals.session.userID },
-			include: { games: true, address: true }
-		});
+		const user = await getUserByID(event.locals.session.userID);
 
 		if (!user) {
 			throw new Error(`User with id: ${event.locals.session.userID} not found`);

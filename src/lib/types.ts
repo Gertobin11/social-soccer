@@ -33,3 +33,13 @@ interface StructuredAddress {
     eircode: string;
 }
 
+
+type AddressFields = {
+    addressID?: number;
+    lineOne: string;
+    lineTwo: string;
+    city: string;
+    county: string;
+    country: string;
+    eircode: string;
+};

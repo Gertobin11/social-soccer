@@ -1,4 +1,4 @@
-import { createCoordinates, getCoordinateByID } from '$lib/server/address';
+import { createCoordinates, getCoordinateByID } from '$lib/orm/address';
 import prisma from '$lib/server/prisma';
 import { afterEach, beforeEach, describe, expect, it } from 'vitest';
 
