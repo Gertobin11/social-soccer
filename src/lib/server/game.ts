@@ -2,7 +2,7 @@ import type { createGameSchema } from '$lib/validation/game';
 import type { SuperValidated } from 'sveltekit-superforms';
 
 import type z from 'zod/v4';
-import type { Game, Level } from '@prisma/client';
+import type { Game, Level, Prisma } from '@prisma/client';
 import { decrypt } from './encryption';
 import { createGame, getGameByID, getRequestToJoin } from '$lib/orm/game';
 import { getAddressByID, getCoordinateByID } from '$lib/orm/address';
@@ -40,20 +40,28 @@ export type GameData = {
 	eircode: string;
 };
 
-export async function buildGameDataForMap(game: Game): Promise<GameData> {
+export type MapGameData = {
+	id: number;
+	coordinates: CoordinateWithGeoJSON;
+	day: string;
+	time: string;
+	level: Level;
+	numberOfPlayers: number;
+    currentPlayerNumbers: number;
+};
+
+type GameWithPlayers = Prisma.GameGetPayload<{include: {players: true}}>
+
+export async function buildGameDataForMap(game: GameWithPlayers): Promise<MapGameData> {
 	const address = await getAddressByID(game.locationID);
-	const gameData: GameData = {
+	const gameData: MapGameData = {
 		id: game.id,
 		level: game.level,
 		day: game.day,
 		time: game.time,
 		coordinates: await getCoordinateByID(address.coordinatesID),
-		lineOne: decrypt(address.lineOne),
-		lineTwo: decrypt(address.lineTwo),
-		city: decrypt(address.city),
-		county: decrypt(address.county),
-		country: decrypt(address.country),
-		eircode: decrypt(address.eircode)
+		numberOfPlayers :game.numberOfPlayers,
+        currentPlayerNumbers: game.players.length
 	};
 
 	return gameData;

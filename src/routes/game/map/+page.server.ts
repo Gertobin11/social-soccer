@@ -1,26 +1,20 @@
 import { redirect } from 'sveltekit-flash-message/server';
 import type { PageServerLoad } from './$types';
-import { buildGameDataForMap, type GameData } from '$lib/server/game';
+import { buildGameDataForMap, type GameData, type MapGameData } from '$lib/server/game';
 import { getLatestGames } from '$lib/orm/game';
 
 export const load: PageServerLoad = async (event) => {
 	// redirect to the homepage if the user is not signed in
-	if (!event.locals.session) {
-		return redirect(
-			'/',
-			{ type: 'error', message: 'You must be signed in to view this page' },
-			event
-		);
-	}
+	const loggedIn = event.locals.session !== null
 
 	try {
-		const gameDataArray: GameData[] = [];
+		const gameDataArray: MapGameData[] = [];
 		const games = await getLatestGames(20);
 
 		for (let game of games) {
 			gameDataArray.push(await buildGameDataForMap(game));
 		}
-		return { gameDataArray };
+		return { gameDataArray, loggedIn };
 	} catch (errorObject) {
 		return redirect(
 			'/',

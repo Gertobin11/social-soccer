@@ -68,7 +68,7 @@ export async function addPlayerToGame(gameID: number, userID: string) {
 }
 
 export async function getLatestGames(limit: number) {
-	return await prisma.game.findMany({ take: limit, orderBy: { createdOn: 'desc' } });
+	return await prisma.game.findMany({ take: limit, orderBy: { createdOn: 'desc' }, include: {players: true} });
 }
 
 export async function getOpenGameRequestForAdmin(organiserID: string) {

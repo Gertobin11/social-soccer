@@ -65,7 +65,7 @@
 			{#if $errors.password}<span class="text-error-500">{$errors.password}</span>{/if}
 
 			<div class="my-4 flex justify-center">
-				<button class="btn preset-filled-primary-500">Submit</button>
+				<button class="btn button-reg">Submit</button>
 			</div>
 			<div class="flex w-full justify-end">
 				<a class="text-surface-600 underline hover:text-surface-400" href="/auth/password-reset"

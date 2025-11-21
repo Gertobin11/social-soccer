@@ -38,7 +38,7 @@
 					</p>
 
 					<div class="col-span-1 flex justify-center text-center">
-						<a href="/game/requests/{request.id}" class="btn preset-filled-primary-500"
+						<a href="/game/requests/{request.id}" class="btn alt-button-reg"
 							>Handle Request</a
 						>
 					</div>
@@ -54,23 +54,23 @@
 			<Icon icon="tdesign:user" width="50" height="50" class="text-primary-500" />
 			<h2 class="text-2xl font-bold pt-5">Player Details</h2>
 		</div>
-		<div class="grid grid-cols-4 gap-x-4">
-			<p class="col-span-1 text-sm font-medium text-gray-500">Email</p>
-			<p class="col-span-3 text-lg text-black">{data.userDetails.email}</p>
+		<div class="grid grid-cols-6 gap-x-4">
+			<p class="col-span-2 text-sm font-medium text-gray-500">Email</p>
+			<p class="col-span-4 text-lg text-black">{data.userDetails.email}</p>
 
-			<p class="col-span-1 text-sm font-medium text-gray-500">First Name</p>
-			<p class="col-span-3 text-lg text-black">{data.userDetails.firstName}</p>
+			<p class="col-span-2 text-sm font-medium text-gray-500">First Name</p>
+			<p class="col-span-4 text-lg text-black">{data.userDetails.firstName ?? "Not Set"}</p>
 
-			<p class="col-span-1 text-sm font-medium text-gray-500">Last Name</p>
-			<p class="col-span-3 text-lg text-black">{data.userDetails.lastName}</p>
+			<p class="col-span-2 text-sm font-medium text-gray-500">Last Name</p>
+			<p class="col-span-4 text-lg text-black">{data.userDetails.lastName ?? "Not Set"}</p>
 
-			<p class="col-span-1 text-sm font-medium text-gray-500">Email Verified?</p>
-			<p class="col-span-3 text-lg text-black">
+			<p class="col-span-2 text-sm font-medium text-gray-500">Email Verified?</p>
+			<p class="col-span-4 text-lg text-black flex items-end">
 				{data.userDetails.emailVerified ? 'yes' : 'no'}
 			</p>
 		</div>
 		<div class="mt-3 flex justify-center">
-			<a href="/profile/update-player-details" class="btn preset-filled-primary-500">Update</a>
+			<a href="/profile/update-player-details" class="btn button-reg">Update</a>
 		</div>
 	</div>
 
@@ -100,18 +100,18 @@
 						<p class="col-span-1 text-center text-lg font-semibold text-black">{game.time}</p>
 
 						<div class="col-span-1 flex justify-center text-center">
-							<a href="/game/{game.id}/manage" class="btn preset-filled-primary-500">Manage</a>
+							<a href="/game/{game.id}/manage" class="btn alt-button-reg">Manage</a>
 						</div>
 					</div>
 				{/each}
 			</div>
 			<div class="mt-auto flex justify-center pt-6">
-				<a href="/game/create" class="btn preset-filled-primary-500">Create New Game</a>
+				<a href="/game/create" class="btn button-reg">Create New Game</a>
 			</div>
 		{:else}
 			<div class="flex flex-col items-center justify-center gap-2 py-10">
 				<p class="text-lg font-bold text-gray-400">You haven't created any games yet.</p>
-				<a href="/game/create" class="btn preset-filled-primary-500">Create Game</a>
+				<a href="/game/create" class="btn button-reg">Create Game</a>
 			</div>
 		{/if}
 	</div>
@@ -144,12 +144,12 @@
 				<p class="col-span-3">{data.address.eircode}</p>
 			</div>
 			<div class="mt-3 flex justify-center">
-				<a href="/profile/update-address" class="btn preset-filled-primary-500">Update</a>
+				<a href="/profile/update-address" class="btn button-reg">Update</a>
 			</div>
 		{:else}
 			<div class="flex flex-col items-center">
 				<p class="text-lg font-bold">Please add an address</p>
-				<a class="btn preset-filled-primary-500" href="/profile/add-address">Add</a>
+				<a class="btn button-reg" href="/profile/add-address">Add</a>
 			</div>
 		{/if}
 	</div>
@@ -180,19 +180,19 @@
 						<p class="col-span-1 text-center text-lg font-semibold text-black">{game.time}</p>
 
 						<div class="col-span-1 flex justify-center text-center">
-							<a href="/game/{game.id}/manage" class="btn preset-filled-primary-500">View Details</a
+							<a href="/game/{game.id}/manage" class="btn alt-button-reg">View Details</a
 							>
 						</div>
 					</div>
 				{/each}
 			</div>
 			<div class="mt-auto flex justify-center pt-6">
-				<a href="/game/map" class="btn preset-filled-primary-500">Find More Games</a>
+				<a href="/game/map" class="btn button-reg">Find More Games</a>
 			</div>
 		{:else}
 			<div class="flex flex-col items-center justify-center gap-2 py-10">
 				<p class="text-lg font-bold text-gray-400">You haven't joined any games.</p>
-				<a href="/game/map" class="btn preset-filled-primary-500">Browse Games</a>
+				<a href="/game/map" class="btn preset-filled-primary-50btn button-reg">Browse Games</a>
 			</div>
 		{/if}
 	</div>

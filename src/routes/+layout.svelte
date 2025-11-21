@@ -12,6 +12,20 @@
 	import type { LayoutProps } from './$types';
 	import Logout from '$lib/components/functional/Logout.svelte';
 
+    import { onNavigate } from '$app/navigation';
+
+    // add natively supported page transitions 
+	onNavigate((navigation) => {
+		if (!document.startViewTransition) return;
+
+		return new Promise((resolve) => {
+			document.startViewTransition(async () => {
+				resolve();
+				await navigation.complete;
+			});
+		});
+	});
+
 	let { data, children }: LayoutProps = $props();
 </script>
 
@@ -44,9 +58,9 @@
 			<Icon icon="mingcute:football-fill" width="28" height="28" />
 		</div></a
 	>
-	<div class="flex shrink justify-evenly gap-2 text-lg text-surface-800">
+	<div class="flex shrink justify-evenly gap-4 text-lg text-surface-800">
+         <a class="hover:text-black hover:underline" href="/game/map">View Games</a>
 		{#if data.session}
-            <a class="hover:text-black hover:underline" href="/game/map">View Games</a>
             <a class="hover:text-black hover:underline" href="/game/create">Create Game</a>
 			<a class="hover:text-black hover:underline" href="/profile/dashboard">My Profile</a>
 			<Logout />

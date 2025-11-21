@@ -79,7 +79,7 @@
 				>{/if}
 
 			<div class="flex justify-center">
-				<button class="btn preset-filled-primary-500">Submit</button>
+				<button class="btn button-reg">Submit</button>
 			</div>
 		</form>
 	</div>

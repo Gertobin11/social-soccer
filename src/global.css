@@ -1,12 +1,27 @@
 .group:hover .constant-rotation {
-    animation: spin 2s linear 0s infinite forwards;
+	animation: spin 2s linear 0s infinite forwards;
 }
 
 @keyframes spin {
-    from {
-        transform: rotate(0deg);
-    }
-    to {
-        transform: rotate(359deg);
-    }
+	from {
+		transform: rotate(0deg);
+	}
+	to {
+		transform: rotate(359deg);
+	}
+}
+
+/* over ride default google map styles */
+
+.gm-style .gm-style-iw-c {
+	padding: 0 !important;
+	border-radius: 0 !important;
+	background: transparent !important;
+	box-shadow: none !important;
+}
+
+.gm-style .gm-style-iw-d {
+	overflow: hidden !important;
+	max-height: none !important;
+	padding: 0 !important;
 }

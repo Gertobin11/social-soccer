@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { config } from 'dotenv';
 	import { page } from '$app/state';
 	import { importLibrary, setOptions } from '@googlemaps/js-api-loader';
 	import { onMount } from 'svelte';
@@ -60,12 +61,12 @@
 						colour = 'black';
 						break;
 				}
-				const title = `${gameData.city} - ${gameData.level}`;
+				const title = `${gameData.level}`;
 				const pinTextGlyph = new PinElement({
-					glyphColor: "white",
+					glyphColor: 'white',
 					background: colour,
 					borderColor: 'white',
-                    scale: 1.5
+					scale: 1.5
 				});
 
 				const marker = new AdvancedMarkerElement({
@@ -78,39 +79,57 @@
 				});
 
 				marker.append(pinTextGlyph);
+				marker.style.overflow = 'hidden !important';
 
 				// show the game details when a marker is clicked
 				marker.addListener('click', () => {
-					const addressLineTwo = gameData.lineTwo ? `${gameData.lineTwo}<br>` : '';
-					const joinGameUrl = `/game/${gameData.id}/join-request`;
+					const viewGameURL = `/game/view/${gameData.id}`;
 					const contentString = `
-                        <div style="font-family: Arial, sans-serif; font-size: 14px; line-height: 1.6; max-width: 280px;">
+                        <div class="w-[280px] overflow-hidden rounded-2xl bg-white shadow-2xl font-sans">
                             
-                            <strong style="font-size: 1.1rem; color: #333;">
-                                Level: ${gameData.level}
-                            </strong>
+                            <div class="relative bg-gray-50 px-5 py-4 border-b border-gray-100 flex items-center justify-between">
+                                <span class="text-xs font-bold uppercase tracking-wider text-gray-400">Level</span>
+                                <span class="text-lg font-bold text-primary-600">${gameData.level}</span>
+                            </div>
 
-                            <p style="margin: 8px 0 0 0;">
-                                <strong>Date:</strong> ${gameData.day}<br>
-                                <strong>Time:</strong> ${gameData.time}
-                            </p>
-                            
-                            <hr style="margin: 10px 0; border: 0; border-top: 1px solid #eee;">
-                            
-                            <p style="margin: 0 0 12px 0;">
-                                <strong>Address:</strong><br>
-                                ${gameData.lineOne}<br>
-                                ${addressLineTwo}
-                                ${gameData.city}, ${gameData.county}<br>
-                                ${gameData.eircode}
-                            </p>
-                            
-                            <a href="${joinGameUrl}" 
-                            style="color: #1a73e8; text-decoration: none; font-weight: bold; font-size: 0.9rem;">
-                                Request to Join Game
-                            </a>
+                            <div class="px-5 py-4 space-y-4">
+                                
+                                <div class="flex justify-between">
+                                    <div>
+                                        <p class="text-[10px] font-bold uppercase text-gray-400">Date</p>
+                                        <p class="text-sm font-semibold text-gray-800">${gameData.day}</p>
+                                    </div>
+                                    <div class="text-right">
+                                        <p class="text-[10px] font-bold uppercase text-gray-400">Time</p>
+                                        <p class="text-sm font-semibold text-gray-800">${gameData.time}</p>
+                                    </div>
+                                </div>
+
+                                <div class="rounded-lg bg-gray-50 p-3 border border-gray-100">
+                                    <div class="flex justify-between items-end mb-1">
+                                        <span class="text-[10px] font-bold uppercase text-gray-400">Players Joined</span>
+                                        <div class="text-sm font-bold text-gray-800">
+                                            <span class="text-primary-600">${gameData.currentPlayerNumbers}</span>
+                                            <span class="text-gray-400">/</span>
+                                            <span>${gameData.numberOfPlayers}</span>
+                                        </div>
+                                    </div>
+                                    <div class="h-1.5 w-full rounded-full bg-gray-200">
+                                        <div class="h-1.5 rounded-full bg-secondary-500" 
+                                            style="width: ${(gameData.currentPlayerNumbers / gameData.numberOfPlayers) * 100}%">
+                                        </div>
+                                    </div>
+                                </div>
+
+                            </div>
+
+                            <div class="flex items-center justify-center py-3">
+                                <a href="${data.loggedIn ? viewGameURL: "/auth/register"}" class="btn button-reg w-full items-center justify-center shadow-lg">
+                                    ${data.loggedIn ? "View Game Details": "Register To View Details"}
+                                </a>
+                            </div>
                         </div>
-                            `;
+                        `;
 
 					infoWindow.setContent(contentString);
 					infoWindow.open(map, marker);

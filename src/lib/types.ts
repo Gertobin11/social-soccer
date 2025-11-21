@@ -1,3 +1,4 @@
+
 // definition of the point stored in postgis
 type GeoJSONPoint = {
 	type: 'Point';
@@ -42,4 +43,4 @@ type AddressFields = {
     county: string;
     country: string;
     eircode: string;
-};
+}
