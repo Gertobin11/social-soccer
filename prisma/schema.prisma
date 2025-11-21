@@ -29,7 +29,7 @@ model User {
     waitingLists       Game[]               @relation()
     ratings            Rating[]
     emailVerification  EmailVerification[]
-    requestsToJoin RequestToJoin[]
+    requestsToJoin     RequestToJoin[]
 }
 
 model Address {
@@ -44,6 +44,8 @@ model Address {
 
     users       User[]
     coordinates Coordinates @relation(fields: [coordinatesID], references: [id], onDelete: Cascade)
+
+    game Game?
 }
 
 model Coordinates {
@@ -90,13 +92,14 @@ enum Level {
 model Game {
     id              Int      @id @default(autoincrement())
     organiserID     String
-    locationID      Int
+    locationID      Int      @unique
     time            String
     day             String
     numberOfPlayers Int
     active          Boolean
     createdOn       DateTime @default(now())
 
+    location    Address  @relation(references: [id], fields: [locationID], onDelete: Cascade)
     level       Level
     players     User[]   @relation("playersInGame")
     waitingList User[]
@@ -118,11 +121,11 @@ model Rating {
 }
 
 model RequestToJoin {
-    id       Int      @id @default(autoincrement())
-    gameID   Int
-    playerID   String
-    createdOn  DateTime @default(now())
-    accepted Boolean?
+    id        Int      @id @default(autoincrement())
+    gameID    Int
+    playerID  String
+    createdOn DateTime @default(now())
+    accepted  Boolean?
 
     game   Game @relation(fields: [gameID], references: [id])
     player User @relation(fields: [playerID], references: [id])
