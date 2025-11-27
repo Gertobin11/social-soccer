@@ -115,14 +115,14 @@
 							<div>
 								<h4 class="text-sm font-medium text-gray-500 dark:text-gray-400">Location</h4>
 								<address class="text-lg font-semibold not-italic">
-									{data.gameData.lineOne}<br />
-									{#if data.gameData.lineTwo}
-										{data.gameData.lineTwo}<br />
+									{data.location.lineOne}<br />
+									{#if data.location.lineTwo}
+										{data.location.lineTwo}<br />
 									{/if}
-									{data.gameData.city}<br />
-									{data.gameData.county}<br />
-									{data.gameData.country}<br />
-									{data.gameData.eircode}
+									{data.location.city}<br />
+									{data.location.county}<br />
+									{data.location.country}<br />
+									{data.location.eircode}
 								</address>
 							</div>
 						</div>
@@ -141,12 +141,15 @@
 				<p class="text-center text-sm text-gray-600 sm:text-left dark:text-gray-400">
 					Ready to play? Joining sends a request to the host.
 				</p>
-				<form method="POST">
-					<button type="submit" class="btn flex justify-between preset-filled-primary-500">
-						<Icon icon="mdi:account-add-outline" width="32" height="32" />
-						Request to Join
-					</button>
-				</form>
+                <!-- Only allow new players to join -->
+				{#if !data.isCurrentPlayer && !data.hasOpenRequest}
+					<form method="POST">
+						<button type="submit" class="btn flex justify-between preset-filled-primary-500">
+							<Icon icon="mdi:account-add-outline" width="32" height="32" />
+							Request to Join
+						</button>
+					</form>
+				{/if}
 			</footer>
 		</div>
 	</div>

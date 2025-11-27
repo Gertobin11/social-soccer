@@ -2,11 +2,14 @@ import type { Actions, PageServerLoad } from './$types';
 import { redirect } from 'sveltekit-flash-message/server';
 import {
 	buildGameDataForMap,
-	getGameWithPLayers,
+	getGameWithPlayers,
 	verifyRequestToJoinIsUnique
 } from '$lib/server/game';
 import { getErrorMessage } from '$lib/client/utils';
 import { createRequestToJoin } from '$lib/orm/game';
+import { getDecryptedAddress } from '$lib/server/address';
+import { getAddressByID } from '$lib/orm/address';
+import prisma from '$lib/server/prisma';
 
 export const load: PageServerLoad = async (event) => {
 	// redirect to the homepage if the user is not signed in
@@ -25,11 +28,29 @@ export const load: PageServerLoad = async (event) => {
 			throw new Error('Invalid GamedID received');
 		}
 
-		const game = await getGameWithPLayers(gameID);
+		const game = await getGameWithPlayers(gameID);
 
 		const gameData = await buildGameDataForMap(game);
 
-		return { gameData, game };
+        const encryptedLocation = await getAddressByID(game.locationID)
+        const location = getDecryptedAddress(encryptedLocation)
+
+        const isOwner = game.organiserID === event.locals.session.userID
+
+        const isCurrentPlayer = game.players.filter(player => player.id === event.locals.session?.userID).length === 1
+
+        const joinRequest = await prisma.requestToJoin.findUnique({
+            where: {
+                requestToPlayer: {
+                    playerID: event.locals.session.userID,
+                    gameID: game.id
+                }
+            }
+        })
+
+       const hasOpenRequest = joinRequest !== null
+
+		return { gameData, game, location , isOwner, isCurrentPlayer, hasOpenRequest};
 	} catch (error) {
 		return redirect(
 			'/',

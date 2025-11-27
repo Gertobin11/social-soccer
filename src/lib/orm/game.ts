@@ -1,5 +1,5 @@
 import prisma from '$lib/server/prisma';
-import type { Level } from '@prisma/client';
+import type { Level, Prisma } from '@prisma/client';
 
 export async function createGame(
 	day: string,
@@ -110,4 +110,24 @@ export async function getGamesParticipatingIn(playerID: string) {
 			players: true
 		}
 	});
+}
+export type GameWithRelatedFields = Prisma.GameGetPayload<{
+    include:{players: true, location: {
+        include: {
+            coordinates: true
+        }
+    }}
+}>
+
+export async function getGamesWithMatchingIDs(gameIDs: number[]): Promise<GameWithRelatedFields[]> {
+    return await prisma.game.findMany({
+        where: {
+            id: { in: gameIDs }
+        },
+        include: { players: true, location: {
+            include: {
+                coordinates: true
+            }
+        } }
+    });
 }

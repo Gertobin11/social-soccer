@@ -4,7 +4,8 @@ import { buildGameDataForMap, type GameData, type MapGameData } from '$lib/serve
 import { getLatestGames } from '$lib/orm/game';
 
 export const load: PageServerLoad = async (event) => {
-	// redirect to the homepage if the user is not signed in
+	// set the logged in state for showing additional functionality 
+    // to the user if logged in
 	const loggedIn = event.locals.session !== null
 
 	try {

@@ -4,7 +4,13 @@ import type { SuperValidated } from 'sveltekit-superforms';
 import type z from 'zod/v4';
 import type { Game, Level, Prisma } from '@prisma/client';
 import { decrypt } from './encryption';
-import { createGame, getGameByID, getRequestToJoin } from '$lib/orm/game';
+import {
+	createGame,
+	getGameByID,
+	getGamesWithMatchingIDs,
+	getRequestToJoin,
+	type GameWithRelatedFields
+} from '$lib/orm/game';
 import { getAddressByID, getCoordinateByID } from '$lib/orm/address';
 
 type createGameData = z.infer<typeof createGameSchema>;
@@ -47,10 +53,10 @@ export type MapGameData = {
 	time: string;
 	level: Level;
 	numberOfPlayers: number;
-    currentPlayerNumbers: number;
+	currentPlayerNumbers: number;
 };
 
-type GameWithPlayers = Prisma.GameGetPayload<{include: {players: true}}>
+type GameWithPlayers = Prisma.GameGetPayload<{ include: { players: true } }>;
 
 export async function buildGameDataForMap(game: GameWithPlayers): Promise<MapGameData> {
 	const address = await getAddressByID(game.locationID);
@@ -60,27 +66,57 @@ export async function buildGameDataForMap(game: GameWithPlayers): Promise<MapGam
 		day: game.day,
 		time: game.time,
 		coordinates: await getCoordinateByID(address.coordinatesID),
-		numberOfPlayers :game.numberOfPlayers,
-        currentPlayerNumbers: game.players.length
+		numberOfPlayers: game.numberOfPlayers,
+		currentPlayerNumbers: game.players.length
 	};
 
 	return gameData;
 }
 
 export async function verifyRequestToJoinIsUnique(gameID: number, userID: string) {
-    const previousRequest = await getRequestToJoin(gameID, userID);
+	const previousRequest = await getRequestToJoin(gameID, userID);
 
-    if (previousRequest) {
-        throw new Error("User already has a request to join this game");
-    }
+	if (previousRequest) {
+		throw new Error('User already has a request to join this game');
+	}
 }
 
+export async function getGameWithPlayers(gameID: number) {
+	const game = await getGameByID(gameID);
 
-export async function getGameWithPLayers(gameID: number) {
-    const game = await getGameByID(gameID);
+	if (!game) {
+		throw new Error(`Unable to find game with an id of: ${gameID}`);
+	}
+	return game;
+}
 
-    if (!game) {
-        throw new Error(`Unable to find game with an id of: ${gameID}`);
-    }
-    return game;
+export type GameWithGeoData = GameWithRelatedFields & {
+	distance: number;
+	currentPlayerNumbers: number;
+	geoLocation: GeoJSONPoint;
+};
+export async function buildClosestGameData(
+	databaseResults: DatabaseCoordinateResultWithDistance[]
+): Promise<GameWithGeoData[]> {
+	const closestGameData: GameWithGeoData[] = [];
+	const gameIDs = databaseResults.map((result) => result.id);
+
+	if (gameIDs.length > 0) {
+		const mattchedGames = await getGamesWithMatchingIDs(gameIDs);
+
+		mattchedGames.forEach((game) => {
+			let matchedData = databaseResults.find((result) => result.id === game.id);
+			if (matchedData) {
+				const geoLocation = JSON.parse(matchedData.location) as GeoJSONPoint
+				closestGameData.push({
+					...game,
+					distance: matchedData.distance,
+					currentPlayerNumbers: game.players.length,
+					geoLocation
+				});
+			}
+		});
+	}
+
+	return closestGameData;
 }

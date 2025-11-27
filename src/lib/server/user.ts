@@ -14,3 +14,5 @@ export async function getDecryptedUserDetails(user: User) {
 
 	return { email: user.email, emailVerified: user.emailVerified, firstName, lastName };
 }
+
+export class ProfileError extends Error {}

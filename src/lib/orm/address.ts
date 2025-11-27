@@ -34,7 +34,7 @@ export async function createCoordinates(longitude: number, latitude: number): Pr
  * @returns Coordinates
  */
 export async function getCoordinateByID(id: number): Promise<CoordinateWithGeoJSON> {
-    const sql = Prisma.sql`
+	const sql = Prisma.sql`
     SELECT
       id,
       ST_AsGeoJSON(location) as location
@@ -42,21 +42,59 @@ export async function getCoordinateByID(id: number): Promise<CoordinateWithGeoJS
     WHERE id = ${id};
   `;
 
-    const result = await prisma.$queryRaw<DatabaseCoordinateResult[]>(sql);
+	const result = await prisma.$queryRaw<DatabaseCoordinateResult[]>(sql);
 
-    if (!result || result.length < 1) {
-        throw new Error('No result returned from database query');
-    }
+	if (!result || result.length < 1) {
+		throw new Error('No result returned from database query');
+	}
 
-    const rawData = result[0];
+	const rawData = result[0];
 
-    const location = JSON.parse(rawData.location) as GeoJSONPoint;
+	const location = JSON.parse(rawData.location) as GeoJSONPoint;
 
-    return {
-        id: rawData.id,
-        location
-    };
+	return {
+		id: rawData.id,
+		location
+	};
 }
+
+/**
+ * Function that looks up the closest games coordinates based off the passed
+ * in longitude and latitude
+ * @param longitude the longitude of the point where the distance is calculated from
+ * @param latitude the latitude of the point where the distance is calculated from
+ * @param amount the number of records retrieved
+ * @returns DatabaseCoordinateResultWithDistance[]
+ */
+export async function findNearestGames(longitude: number, latitude: number, amount: number) {
+	const sql = Prisma.sql`
+    SELECT 
+      g.id,
+      ST_AsGeoJSON(c.location) as location,
+      ST_Distance(
+        c.location, 
+        ST_SetSRID(ST_MakePoint(${latitude}, ${longitude}), 4326)::geography
+      ) as distance
+    FROM "Game" g
+    JOIN "Address" a ON g."locationID" = a.id
+    JOIN "Coordinates" c ON a."coordinatesID" = c.id
+    WHERE g.active = 't'
+    ORDER BY 
+      c.location <-> ST_SetSRID(ST_MakePoint(${longitude}, ${latitude}), 4326)::geography
+    LIMIT ${amount};
+  `;
+
+	const results = await prisma.$queryRaw<DatabaseCoordinateResultWithDistance[]>(sql);
+
+    return results.map((result) => {
+        return {
+            distance: result.distance,
+            id: result.id,
+            location: result.location
+        }
+    })
+}
+
 
 /**
  * Function that uses prisma to create an address
@@ -65,32 +103,32 @@ export async function getCoordinateByID(id: number): Promise<CoordinateWithGeoJS
  * @returns Address
  */
 export async function createAddress(data: AddressFields, coordinatesID: any) {
-    return await prisma.address.create({
-        data: {
-            lineOne: encrypt(data.lineOne),
-            lineTwo: encrypt(data.lineTwo),
-            city: encrypt(data.city),
-            county: encrypt(data.county),
-            country: encrypt(data.country),
-            eircode: encrypt(data.eircode),
-            coordinates: { connect: { id: coordinatesID } }
-        }
-    });
+	return await prisma.address.create({
+		data: {
+			lineOne: encrypt(data.lineOne),
+			lineTwo: encrypt(data.lineTwo),
+			city: encrypt(data.city),
+			county: encrypt(data.county),
+			country: encrypt(data.country),
+			eircode: encrypt(data.eircode),
+			coordinates: { connect: { id: coordinatesID } }
+		}
+	});
 }
 
 /**
  * Function that returns the address of the id passed, or throws an error if it is not found
- * @param id the id of the address 
+ * @param id the id of the address
  * @returns Address
  */
 export async function getAddressByID(id: number) {
-    const address = await prisma.address.findUnique({
-        where: { id }
-    });
-    if (!address) {
-        throw new Error(`Address with an id: ${id} not found`);
-    }
-    return address;
+	const address = await prisma.address.findUnique({
+		where: { id }
+	});
+	if (!address) {
+		throw new Error(`Address with an id: ${id} not found`);
+	}
+	return address;
 }
 
 /**
@@ -100,24 +138,24 @@ export async function getAddressByID(id: number) {
  * @returns Address
  */
 export async function updateAddress(data: AddressFields, coordinatesID: number) {
-    return await prisma.address.update({
-        where: { id: data.addressID },
-        data: {
-            lineOne: encrypt(data.lineOne),
-            lineTwo: encrypt(data.lineTwo),
-            city: encrypt(data.city),
-            county: encrypt(data.county),
-            country: encrypt(data.country),
-            eircode: encrypt(data.eircode),
-            coordinates: { connect: { id: coordinatesID } }
-        }
-    });
+	return await prisma.address.update({
+		where: { id: data.addressID },
+		data: {
+			lineOne: encrypt(data.lineOne),
+			lineTwo: encrypt(data.lineTwo),
+			city: encrypt(data.city),
+			county: encrypt(data.county),
+			country: encrypt(data.country),
+			eircode: encrypt(data.eircode),
+			coordinates: { connect: { id: coordinatesID } }
+		}
+	});
 }
 
 export async function findFirstMatchingAddress(id: number) {
-    return  await prisma.address.findFirst({ where: { id } });
+	return await prisma.address.findFirst({ where: { id } });
 }
 
 export async function deleteCoordinatesByID(previousCoordiantesID: number) {
-    await prisma.coordinates.delete({ where: { id: previousCoordiantesID } });
+	await prisma.coordinates.delete({ where: { id: previousCoordiantesID } });
 }

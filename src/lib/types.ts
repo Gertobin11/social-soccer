@@ -17,6 +17,13 @@ type DatabaseCoordinateResult = {
 	location: string; // ST_AsGeoJSON() returns a string
 };
 
+// the initial type from the find nearest games coordinates query
+type DatabaseCoordinateResultWithDistance = {
+	id: number;
+    distance: number // distance from the location the query was generated from
+    location: string; // ST_AsGeoJSON() returns a string
+};
+
 // represents the data tye returned from a Google revere goecode look up
 interface AddressComponent {
 	long_name: string;
