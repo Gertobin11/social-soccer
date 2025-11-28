@@ -1,4 +1,4 @@
-import type { Rating } from '@prisma/client';
+import type { Prisma, Rating } from '@prisma/client';
 
 export function getAverageRating(ratings: Rating[]) {
 	if (ratings.length > 0) {
@@ -6,3 +6,7 @@ export function getAverageRating(ratings: Rating[]) {
 		return totalRatings / ratings.length;
 	}
 }
+
+export type RequestWithRelatedFields = Prisma.RequestToJoinGetPayload<{
+	include: { player: { include: { ratings: true } }; game: true };
+}>;

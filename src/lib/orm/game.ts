@@ -43,6 +43,14 @@ export async function getRequestToJoin(gameID: number, userID: string) {
 	});
 }
 
+export async function getRequestToJoinByID(id: number) {
+	return await prisma.requestToJoin.findUnique({
+		where: {
+			id
+		}
+	});
+}
+
 export async function createRequestToJoin(gameID: number, userID: string) {
 	await prisma.requestToJoin.create({
 		data: {
@@ -68,13 +76,17 @@ export async function addPlayerToGame(gameID: number, userID: string) {
 }
 
 export async function getLatestGames(limit: number) {
-	return await prisma.game.findMany({ take: limit, orderBy: { createdOn: 'desc' }, include: {players: true} });
+	return await prisma.game.findMany({
+		take: limit,
+		orderBy: { createdOn: 'desc' },
+		include: { players: true }
+	});
 }
 
 export async function getOpenGameRequestForAdmin(organiserID: string) {
 	return await prisma.requestToJoin.findMany({
 		where: {
-			accepted: undefined,
+			accepted: null,
 			game: {
 				organiserID
 			}
@@ -111,23 +123,54 @@ export async function getGamesParticipatingIn(playerID: string) {
 		}
 	});
 }
+
 export type GameWithRelatedFields = Prisma.GameGetPayload<{
-    include:{players: true, location: {
-        include: {
-            coordinates: true
-        }
-    }}
-}>
+	include: {
+		players: true;
+		location: {
+			include: {
+				coordinates: true;
+			};
+		};
+	};
+}>;
 
 export async function getGamesWithMatchingIDs(gameIDs: number[]): Promise<GameWithRelatedFields[]> {
-    return await prisma.game.findMany({
-        where: {
-            id: { in: gameIDs }
-        },
-        include: { players: true, location: {
-            include: {
-                coordinates: true
-            }
-        } }
-    });
+	return await prisma.game.findMany({
+		where: {
+			id: { in: gameIDs }
+		},
+		include: {
+			players: true,
+			location: {
+				include: {
+					coordinates: true
+				}
+			}
+		}
+	});
+}
+
+export async function removePlayerFromGame(gameID: number, userID: string) {
+	await prisma.game.update({
+		where: {
+			id: gameID
+		},
+		data: {
+			players: {
+				disconnect: {
+					id: userID
+				}
+			}
+		}
+	});
+}
+
+export async function markRequestAccepted(requestID: number) {
+	await prisma.requestToJoin.update({
+		where: { id: requestID },
+		data: {
+			accepted: true
+		}
+	});
 }

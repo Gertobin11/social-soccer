@@ -6,6 +6,7 @@ import { getDecryptedAddress } from '$lib/server/address';
 import { getUserByID } from '$lib/orm/user';
 import { getDecryptedUserDetails } from '$lib/server/user';
 import { getGamesParticipatingIn, getOpenGameRequestForAdmin, getManagedGames } from '$lib/orm/game';
+import type { RequestWithRelatedFields } from '$lib/client/games';
 
 export const load: PageServerLoad = async (event) => {
 	// redirect to the homepage if the user is not signed in
@@ -31,7 +32,7 @@ export const load: PageServerLoad = async (event) => {
 		}
 
         const userDetails = await getDecryptedUserDetails(user)
-        const openRequests = await getOpenGameRequestForAdmin(user.id)
+        const openRequests: RequestWithRelatedFields[] = await getOpenGameRequestForAdmin(user.id)
         const managedGames = await getManagedGames(user.id)
         const gamesParticipatingIn = await getGamesParticipatingIn(user.id)
 

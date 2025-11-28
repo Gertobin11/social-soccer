@@ -84,7 +84,7 @@
 
 				// show the game details when a marker is clicked
 				marker.addListener('click', () => {
-					const viewGameURL = `/game/${gameData.id}/join-request`;
+					const viewGameURL = `/game/view/${gameData.id}`;
 					const contentString = `
                         <div class="w-[280px] overflow-hidden rounded-2xl bg-white shadow-2xl font-sans">
                             

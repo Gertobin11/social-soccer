@@ -15,6 +15,7 @@ import { getAddressByID, getCoordinateByID } from '$lib/orm/address';
 
 type createGameData = z.infer<typeof createGameSchema>;
 
+
 /**
  * Function that takes in a super validated form and an oraniser id, to create a game and link it with
  * the location in the form
@@ -119,4 +120,16 @@ export async function buildClosestGameData(
 	}
 
 	return closestGameData;
+}
+
+export async function verifyUserIsOrganiserOfGame(gameID: number, userID: string) {
+    const game = await getGameByID(gameID)
+
+    if(!game) {
+        throw new Error(`Game with id: ${gameID} does not exist`)
+    }
+
+    if(game.organiserID !== userID) {
+        throw new Error(`User with id ${userID} is not the organiser of game with id ${gameID}`)
+    }
 }

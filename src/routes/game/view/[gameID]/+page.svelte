@@ -1,9 +1,9 @@
 <script lang="ts">
 	import SlidingImage from '$lib/components/ui/SlidingImage.svelte';
 	import { onMount } from 'svelte';
-	import type { PageProps } from './$types';
 	import { importLibrary, setOptions } from '@googlemaps/js-api-loader';
 	import Icon from '@iconify/svelte';
+	import type { PageProps } from './$types';
 	let { data }: PageProps = $props();
 
 	let mapElement: HTMLDivElement;
@@ -138,17 +138,35 @@
 			<footer
 				class="flex flex-col items-center justify-between gap-4 border-t border-gray-200 bg-gray-50 p-6 sm:flex-row dark:border-gray-700 dark:bg-gray-800/50"
 			>
-				<p class="text-center text-sm text-gray-600 sm:text-left dark:text-gray-400">
-					Ready to play? Joining sends a request to the host.
-				</p>
-                <!-- Only allow new players to join -->
+				<!-- Only allow new players to join -->
 				{#if !data.isCurrentPlayer && !data.hasOpenRequest}
-					<form method="POST">
+					<p class="text-center text-sm text-gray-600 sm:text-left dark:text-gray-400">
+						Ready to play? Joining sends a request to the host.
+					</p>
+					<form method="POST" action="?/join">
 						<button type="submit" class="btn flex justify-between preset-filled-primary-500">
 							<Icon icon="mdi:account-add-outline" width="32" height="32" />
 							Request to Join
 						</button>
 					</form>
+
+					<!-- if they are currently playing in this game give them the option to quit-->
+				{:else if data.isCurrentPlayer}
+					<p class="text-center text-sm text-gray-600 sm:text-left dark:text-gray-400">
+						You are participating in this game. Cancel?
+					</p>
+					<form method="POST" action="?/cancel">
+						<button type="submit" class="btn flex justify-between preset-filled-error-500">
+							<Icon icon="material-symbols-light:cancel-outline" width="32" height="32" />
+							Cancel
+						</button>
+					</form>
+
+					<!-- Show that their request is pending -->
+				{:else if data.hasOpenRequest}
+					<p class="text-center text-sm text-gray-600 sm:text-left dark:text-gray-400">
+						You request to join is pending
+					</p>
 				{/if}
 			</footer>
 		</div>
