@@ -11,12 +11,12 @@
 
 	let openRequests: RequestWithRelatedFields[] = $state(data.openRequests);
 
-	async function handleAccept(requestID: number) {
+	async function handleRequest(requestID: number, accepted: boolean) {
 		try {
-			const response = await fetch(`/game/fetch/accept-request`, {
+			const response = await fetch(`/game/fetch/handle-join-request`, {
 				method: 'POST',
 				headers: { type: 'application/json' },
-				body: JSON.stringify({ requestID })
+				body: JSON.stringify({ requestID, accepted })
 			});
 
 			if (!response.ok) {
@@ -71,13 +71,13 @@
 					</p>
 
 					<div class="col-span-1 flex justify-center">
-						<button onclick={async() => await handleAccept(request.id)}
+						<button onclick={async () => await handleRequest(request.id, true)}
 							><Icon icon="mdi:tick" width="32" height="32" class="text-success-500" /></button
 						>
 					</div>
 
 					<div class="col-span-1 flex justify-center">
-						<button
+						<button onclick={async () => await handleRequest(request.id, false)}
 							><Icon
 								icon="material-symbols-light:cancel-outline"
 								width="32"
@@ -148,7 +148,7 @@
 						<p class="col-span-1 text-center text-lg font-semibold text-black">{game.time}</p>
 
 						<div class="col-span-1 flex justify-center text-center">
-							<a href="/game/{game.id}/manage" class="alt-button-reg btn">Manage</a>
+							<a href="/game/manage/{game.id}" class="alt-button-reg btn">Manage</a>
 						</div>
 					</div>
 				{/each}
@@ -228,7 +228,7 @@
 						<p class="col-span-1 text-center text-lg font-semibold text-black">{game.time}</p>
 
 						<div class="col-span-1 flex justify-center text-center">
-							<a href="/game/{game.id}/manage" class="alt-button-reg btn">View Details</a>
+							<a href="/game/view/{game.id}" class="alt-button-reg btn">View Details</a>
 						</div>
 					</div>
 				{/each}

@@ -4,6 +4,7 @@ import { fail, superValidate } from 'sveltekit-superforms';
 import { zod4 } from 'sveltekit-superforms/adapters';
 import { profileSchema } from '$lib/validation/auth';
 import { addNamesToUser, getUserByID } from '$lib/orm/user';
+import { decrypt } from '$lib/server/encryption';
 
 export const load: PageServerLoad = async (event) => {
 	// redirect to the homepage if the user is not signed in
@@ -25,8 +26,8 @@ export const load: PageServerLoad = async (event) => {
 		// populate the form with the users details
 		const profileForm = await superValidate(zod4(profileSchema), {
 			defaults: {
-				firstName: user.firstName || '',
-				lastName: user.lastName || ''
+				firstName: user.firstName ? decrypt(user.firstName) : '',
+				lastName: user.lastName ? decrypt(user.lastName) : ''
 			}
 		});
 

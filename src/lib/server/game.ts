@@ -2,8 +2,7 @@ import type { createGameSchema } from '$lib/validation/game';
 import type { SuperValidated } from 'sveltekit-superforms';
 
 import type z from 'zod/v4';
-import type { Game, Level, Prisma } from '@prisma/client';
-import { decrypt } from './encryption';
+import type { Level, Prisma } from '@prisma/client';
 import {
 	createGame,
 	getGameByID,
@@ -14,7 +13,6 @@ import {
 import { getAddressByID, getCoordinateByID } from '$lib/orm/address';
 
 type createGameData = z.infer<typeof createGameSchema>;
-
 
 /**
  * Function that takes in a super validated form and an oraniser id, to create a game and link it with
@@ -96,6 +94,7 @@ export type GameWithGeoData = GameWithRelatedFields & {
 	currentPlayerNumbers: number;
 	geoLocation: GeoJSONPoint;
 };
+
 export async function buildClosestGameData(
 	databaseResults: DatabaseCoordinateResultWithDistance[]
 ): Promise<GameWithGeoData[]> {
@@ -108,7 +107,7 @@ export async function buildClosestGameData(
 		mattchedGames.forEach((game) => {
 			let matchedData = databaseResults.find((result) => result.id === game.id);
 			if (matchedData) {
-				const geoLocation = JSON.parse(matchedData.location) as GeoJSONPoint
+				const geoLocation = JSON.parse(matchedData.location) as GeoJSONPoint;
 				closestGameData.push({
 					...game,
 					distance: matchedData.distance,
@@ -123,13 +122,13 @@ export async function buildClosestGameData(
 }
 
 export async function verifyUserIsOrganiserOfGame(gameID: number, userID: string) {
-    const game = await getGameByID(gameID)
+	const game = await getGameByID(gameID);
 
-    if(!game) {
-        throw new Error(`Game with id: ${gameID} does not exist`)
-    }
+	if (!game) {
+		throw new Error(`Game with id: ${gameID} does not exist`);
+	}
 
-    if(game.organiserID !== userID) {
-        throw new Error(`User with id ${userID} is not the organiser of game with id ${gameID}`)
-    }
+	if (game.organiserID !== userID) {
+		throw new Error(`User with id ${userID} is not the organiser of game with id ${gameID}`);
+	}
 }

@@ -1,5 +1,4 @@
 <script lang="ts">
-	import SlidingImage from '$lib/components/ui/SlidingImage.svelte';
 	import { onMount } from 'svelte';
 	import { importLibrary, setOptions } from '@googlemaps/js-api-loader';
 	import Icon from '@iconify/svelte';
@@ -36,16 +35,10 @@
 	});
 </script>
 
-<!-- a 2 panel layout for large screens and single column for mobiles -->
-<section class="grid min-h-[calc(100vh-4rem)] grid-cols-1 md:grid-cols-2">
-	<!-- a full screen sliding image -->
-	<div class="h-full">
-		<!-- Photo by Anna Tarazevich: https://www.pexels.com/photo/close-up-shot-of-scrabble-tiles-on-a-white-surface-6230960/ -->
-		<SlidingImage imageSrc="/request-to-join.webp" />
-	</div>
-
+<!-- A single card, displaying the game details -->
+<section class="min-h-[calc(100vh-4rem)] flex items-center justify-center">
 	<!-- show details of the requested game to join-->
-	<div class="col-span-1 flex items-center justify-center">
+	<div class="flex h-full items-center justify-center">
 		<div class="w-full max-w-4xl overflow-hidden rounded-lg bg-white shadow-xl">
 			<header class="border-b border-gray-200 p-6 dark:border-gray-700">
 				<h2 class="text-2xl font-bold">Game Details</h2>
@@ -53,7 +46,7 @@
 
 			<section class="p-6">
 				<!-- Responsive Grid: 1 col on mobile, 2 cols on desktop -->
-				<div class="grid grid-cols-1 gap-6 md:grid-cols-2">
+				<div class="grid grid-cols-1 gap-6 lg:grid-cols-2">
 					<!-- Left Column: Key Details -->
 					<div class="flex flex-col space-y-6">
 						<!-- Level Chip -->
@@ -129,7 +122,7 @@
 					</div>
 
 					<!-- Right Column: Map Placeholder -->
-					<div class="h-64 w-full overflow-hidden rounded-lg md:h-full">
+					<div class="h-64 w-full overflow-hidden rounded-lg lg:h-full">
 						<div class="h-full w-full" bind:this={mapElement}></div>
 					</div>
 				</div>

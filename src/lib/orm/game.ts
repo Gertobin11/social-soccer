@@ -39,7 +39,8 @@ export async function getRequestToJoin(gameID: number, userID: string) {
 	return await prisma.requestToJoin.findUnique({
 		where: {
 			requestToPlayer: { gameID, playerID: userID }
-		}
+		},
+        include: { game: true, player: { include: { ratings: true } } }
 	});
 }
 
@@ -166,11 +167,31 @@ export async function removePlayerFromGame(gameID: number, userID: string) {
 	});
 }
 
-export async function markRequestAccepted(requestID: number) {
+export async function updateRequestToJoin(requestID: number, accepted: boolean) {
 	await prisma.requestToJoin.update({
 		where: { id: requestID },
 		data: {
-			accepted: true
+			accepted
 		}
 	});
+}
+
+export async function deleteRequestToJoin(gameID: number, playerID: string) {
+    await prisma.requestToJoin.delete({
+        where: {
+            requestToPlayer: {
+                playerID, gameID
+            }
+        }
+    })
+}
+
+export async function getOpenRequestsForGame(gameID: number) {
+    return await prisma.requestToJoin.findMany({
+        where: {
+            gameID: gameID,
+            accepted: null
+        },
+        include: { game: true, player: { include: { ratings: true } } }
+    });
 }

@@ -6,10 +6,15 @@ import {
 	verifyRequestToJoinIsUnique
 } from '$lib/server/game';
 import { getErrorMessage } from '$lib/client/utils';
-import { createRequestToJoin, getGameByID, removePlayerFromGame } from '$lib/orm/game';
+import {
+	createRequestToJoin,
+	deleteRequestToJoin,
+	getGameByID,
+	getRequestToJoin,
+	removePlayerFromGame
+} from '$lib/orm/game';
 import { getDecryptedAddress } from '$lib/server/address';
 import { getAddressByID } from '$lib/orm/address';
-import prisma from '$lib/server/prisma';
 
 export const load: PageServerLoad = async (event) => {
 	// redirect to the homepage if the user is not signed in
@@ -39,16 +44,9 @@ export const load: PageServerLoad = async (event) => {
 		const isCurrentPlayer =
 			game.players.filter((player) => player.id === event.locals.session?.userID).length === 1;
 
-		const joinRequest = await prisma.requestToJoin.findUnique({
-			where: {
-				requestToPlayer: {
-					playerID: event.locals.session.userID,
-					gameID: game.id
-				}
-			}
-		});
+		const joinRequest = await getRequestToJoin(game.id, event.locals.session.userID);
 
-		const hasOpenRequest = joinRequest !== null;
+		const hasOpenRequest = joinRequest !== null && joinRequest.accepted === null;
 
 		return { gameData, game, location, isOwner, isCurrentPlayer, hasOpenRequest };
 	} catch (error) {
@@ -126,18 +124,23 @@ export const actions: Actions = {
 				throw new Error(`Player with user id: ${userID} is not in this game, game id : ${gameID}`);
 			}
 
+			// remove the player and the request used to join the game
 			await removePlayerFromGame(gameID, userID);
+			await deleteRequestToJoin(gameID, userID);
 		} catch (error) {
 			return redirect(
 				'/',
-				{ type: 'error', message: `Unable to be removed from the game with error: ${getErrorMessage(error)}` },
+				{
+					type: 'error',
+					message: `Unable to be removed from the game with error: ${getErrorMessage(error)}`
+				},
 				event
 			);
 		}
 
 		return redirect(
 			`/game/view/${event.params.gameID}`,
-			{ type: 'success', message: `You hve successfully been removed fro the game` },
+			{ type: 'success', message: `You have successfully been removed fro the game` },
 			event
 		);
 	}
