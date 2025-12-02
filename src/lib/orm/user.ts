@@ -1,16 +1,17 @@
 import { encrypt } from '$lib/server/encryption';
+import type { Prisma } from '@prisma/client';
 import prisma from '../server/prisma';
 
-export async  function addNamesToUser(userID: string, firstName: string, lastName: string) {
-    await prisma.user.update({
-        where: {
-            id: userID
-        },
-        data:{
-            firstName: encrypt(firstName),
-            lastName: encrypt(lastName)
-        }
-    })
+export async function addNamesToUser(userID: string, firstName: string, lastName: string) {
+	await prisma.user.update({
+		where: {
+			id: userID
+		},
+		data: {
+			firstName: encrypt(firstName),
+			lastName: encrypt(lastName)
+		}
+	});
 }
 
 /**
@@ -27,8 +28,9 @@ export async function getUserByID(id: string) {
 			emailVerification: true,
 			sessions: true,
 			passwordResetToken: true,
-            address: true,
-            games: true
+			address: true,
+			games: true,
+			ratings: true
 		}
 	});
 }
@@ -45,6 +47,45 @@ export async function addAddressToUser(userID: string, addressID: number) {
 		},
 		data: {
 			addressID
+		}
+	});
+}
+
+export type UserWithRatings = Prisma.UserGetPayload<{ include: { ratings: true } }>;
+
+export async function createRating(userID: string, gameID: number, rating: number) {
+	return await prisma.rating.create({
+		data: {
+			playerID: userID,
+			gameID,
+			rating
+		}
+	});
+}
+
+export async function updateRating(userID: string, gameID: number, rating: number) {
+	return await prisma.rating.update({
+		where: {
+			uniqueRating: {
+				playerID: userID,
+				gameID
+			}
+		},
+		data: {
+			playerID: userID,
+			gameID,
+			rating
+		}
+	});
+}
+
+export async function getRating(userID: string, gameID: number) {
+	return await prisma.rating.findUnique({
+		where: {
+			uniqueRating: {
+				playerID: userID,
+				gameID
+			}
 		}
 	});
 }

@@ -30,7 +30,11 @@ export async function getGameByID(gameID: number) {
 			id: gameID
 		},
 		include: {
-			players: true
+			players: {
+                include: {
+                    ratings: true
+                }
+            }
 		}
 	});
 }
