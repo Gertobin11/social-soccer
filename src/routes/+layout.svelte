@@ -12,9 +12,9 @@
 	import type { LayoutProps } from './$types';
 	import Logout from '$lib/components/functional/Logout.svelte';
 
-    import { onNavigate } from '$app/navigation';
+	import { onNavigate } from '$app/navigation';
 
-    // add natively supported page transitions 
+	// add natively supported page transitions
 	onNavigate((navigation) => {
 		if (!document.startViewTransition) return;
 
@@ -40,7 +40,7 @@
 {#if $flash}
 	<div class="absolute flex w-full justify-center p-2 md:justify-end">
 		<div
-			class={`${$flash.type === 'success' ? 'preset-filled-success-500' : 'preset-filled-error-500'} flex w-full justify-between rounded-xl p-4 shadow-xl md:w-64`}
+			class={`${$flash.type === 'success' ? '  border-b-4 border-success-500' : 'border-b-4 border-error-500'} flex w-full justify-between rounded-xl bg-white p-4 shadow-xl md:w-64`}
 		>
 			<p>{$flash.message}</p>
 			<button onclick={() => ($flash = undefined)}>X</button>
@@ -59,10 +59,10 @@
 		</div></a
 	>
 	<div class="flex shrink justify-evenly gap-4 text-lg text-surface-800">
-         <a class="hover:text-black hover:underline" href="/game/map">View Games</a>
+		<a class="hover:text-black hover:underline" href="/game/map">View Games</a>
 		{#if data.session}
-            <a class="hover:text-black hover:underline" href="/game/create">Create Game</a>
-            <a class="hover:text-black hover:underline" href="/game/map/games-near-me">Games Near Me</a>
+			<a class="hover:text-black hover:underline" href="/game/create">Create Game</a>
+			<a class="hover:text-black hover:underline" href="/game/map/games-near-me">Games Near Me</a>
 			<a class="hover:text-black hover:underline" href="/profile/dashboard">My Profile</a>
 			<Logout />
 		{:else}
@@ -71,6 +71,6 @@
 		{/if}
 	</div>
 </nav>
-<div class="mt-16 bg-center bg-[url('/background.webp')] min-h-[90vh]">
+<div class="mt-16 min-h-[90vh] bg-[url('/background.webp')] bg-center">
 	{@render children?.()}
 </div>

@@ -10,7 +10,7 @@ export async function createGame(
 	level: Level,
 	addressID: number
 ) {
-	await prisma.game.create({
+	return await prisma.game.create({
 		data: {
 			day,
 			active,

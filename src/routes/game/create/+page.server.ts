@@ -58,6 +58,7 @@ export const actions: Actions = {
 			);
 		}
 
+		let gameID: number;
 		const userID = event.locals.user?.id;
 		if (!userID) {
 			return redirect(
@@ -74,11 +75,13 @@ export const actions: Actions = {
 			return fail(400, { gameDetailsForm, message: 'Form not valid' });
 		}
 		try {
-			await createGameFromForm(gameDetailsForm, userID);
+			let game = await createGameFromForm(gameDetailsForm, userID);
+			gameID = game.id;
 		} catch (error) {
 			return fail(500, { gameDetailsForm, message: 'Unexpected Error, please contact support' });
 		}
 
-		return redirect('/', { type: 'success', message: 'Game Created Successfully!' }, event);
+		let location = gameID ? `/game/view/${gameID}` : '/';
+		return redirect(location, { type: 'success', message: 'Game Created Successfully!' }, event);
 	}
 };

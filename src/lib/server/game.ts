@@ -1,4 +1,4 @@
-import type { createGameSchema } from '$lib/validation/game';
+import type { createGameSchema, filterGameSchema } from '$lib/validation/game';
 import type { SuperValidated } from 'sveltekit-superforms';
 
 import type z from 'zod/v4';
@@ -12,22 +12,23 @@ import {
 } from '$lib/orm/game';
 import { getAddressByID, getCoordinateByID } from '$lib/orm/address';
 
-type createGameData = z.infer<typeof createGameSchema>;
+type CreateGameData = z.infer<typeof createGameSchema>;
+export type FilterGameData = z.infer<typeof filterGameSchema>;
 
 /**
  * Function that takes in a super validated form and an oraniser id, to create a game and link it with
  * the location in the form
  * @param form The submitted supervalidated form
  * @param organiserID The users id who created the game
- * @returns
+ * @returns Promise<Game>
  */
 export async function createGameFromForm(
-	form: SuperValidated<createGameData>,
+	form: SuperValidated<CreateGameData>,
 	organiserID: string
 ) {
 	let { day, active, time, numberOfPlayers, level, addressID } = form.data;
 
-	await createGame(day, active, time, numberOfPlayers, organiserID, level, addressID);
+	return await createGame(day, active, time, numberOfPlayers, organiserID, level, addressID);
 }
 
 // used for showing games in Google Maps API
