@@ -2,6 +2,12 @@ import { encrypt } from '$lib/server/encryption';
 import type { Prisma } from '@prisma/client';
 import prisma from '../server/prisma';
 
+/**
+ * Fuction that updates the User with a first and second name
+ * @param userID the id of the user
+ * @param firstName their first Name
+ * @param lastName their last name
+ */
 export async function addNamesToUser(userID: string, firstName: string, lastName: string) {
 	await prisma.user.update({
 		where: {
@@ -15,9 +21,29 @@ export async function addNamesToUser(userID: string, firstName: string, lastName
 }
 
 /**
+ * Function that creates a user in the database
+ * @param userID the id the user will have
+ * @param email the users email - unique
+ * @param passwordHash the hashed password of the user
+ * @returns Promise<User>
+ */
+export async function createUser(userID: string, email: string, passwordHash: string) {
+    return await prisma.user.create({
+        data: {
+            id: userID,
+            email,
+            emailVerified: false,
+            passwordHash
+        }
+    });
+}
+
+
+
+/**
  * function that looks up a user object by its id
  * @param id the id of the user
- * @returns the user object waith its related fields or null
+ * @returns Promise<User | null>
  */
 export async function getUserByID(id: string) {
 	return await prisma.user.findUnique({
@@ -31,6 +57,19 @@ export async function getUserByID(id: string) {
 			address: true,
 			games: true,
 			ratings: true
+		}
+	});
+}
+
+/**
+ * Function that looks up a user by eail and returns the User or null
+ * @param email the email of the user
+ * @returns User | null
+ */
+export async function getUserByEmail(email: string) {
+	return await prisma.user.findUnique({
+		where: {
+			email
 		}
 	});
 }

@@ -14,6 +14,7 @@ import prisma from '$lib/server/prisma';
 import { sendVerificationEmail } from '$lib/server/email';
 import { redirect, setFlash } from 'sveltekit-flash-message/server';
 import { getErrorMessage } from '$lib/client/utils';
+import { createUser, getUserByEmail } from '$lib/orm/user';
 
 export const load: PageServerLoad = async (event) => {
 	// redirect to the homepage if the user already has a session
@@ -47,24 +48,12 @@ export const actions: Actions = {
 		try {
 
             // check if the user is already registered
-            const previousUser = await prisma.user.findUnique({
-                where: {
-                    email
-                }
-            })
-
+            const previousUser = await getUserByEmail(email)
             if(previousUser) {
                 throw new Error("Account with this email aready exists")
             }
 
-			await prisma.user.create({
-				data: {
-					id: userID,
-					email,
-					emailVerified: false,
-					passwordHash
-				}
-			});
+			await createUser(userID, email, passwordHash);
 
             // create the email validation token
 			const token = await createEmailVerificationToken(userID);

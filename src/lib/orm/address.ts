@@ -86,15 +86,14 @@ export async function findNearestGames(longitude: number, latitude: number, amou
 
 	const results = await prisma.$queryRaw<DatabaseCoordinateResultWithDistance[]>(sql);
 
-    return results.map((result) => {
-        return {
-            distance: result.distance,
-            id: result.id,
-            location: result.location
-        }
-    })
+	return results.map((result) => {
+		return {
+			distance: result.distance,
+			id: result.id,
+			location: result.location
+		};
+	});
 }
-
 
 /**
  * Function that uses prisma to create an address
@@ -152,10 +151,19 @@ export async function updateAddress(data: AddressFields, coordinatesID: number) 
 	});
 }
 
-export async function findFirstMatchingAddress(id: number) {
-	return await prisma.address.findFirst({ where: { id } });
+/**
+ * Function that returns a matching address object or null if a match is not found
+ * @param id The id of the address requested
+ * @returns Promise<Address | null>
+ */
+export async function getAddress(id: number) {
+	return await prisma.address.findUnique({ where: { id } });
 }
 
-export async function deleteCoordinatesByID(previousCoordiantesID: number) {
-	await prisma.coordinates.delete({ where: { id: previousCoordiantesID } });
+/**
+ * Function that deletes the correspnding Soordinates object
+ * @param id The id of the Coordinates
+ */
+export async function deleteCoordinatesByID(id: number) {
+	await prisma.coordinates.delete({ where: { id } });
 }

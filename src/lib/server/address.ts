@@ -5,7 +5,7 @@ import {
 	createAddress,
 	createCoordinates,
 	deleteCoordinatesByID,
-	findFirstMatchingAddress,
+	getAddress,
 	updateAddress
 } from '$lib/orm/address';
 import type { Address } from '@prisma/client';
@@ -50,7 +50,7 @@ export async function performUpdate(data: AddressFields, coordinatesID: number) 
 		throw new Error('No addressID present in the fom');
 	}
 
-	const address = await findFirstMatchingAddress(data.addressID);
+	const address = await getAddress(data.addressID);
 	if (address) {
 		previousCoordiantesID = address.coordinatesID;
 	}
