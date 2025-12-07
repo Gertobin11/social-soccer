@@ -8,6 +8,7 @@
 	import type { PageProps } from './$types';
 	import * as MarkerClusterer from '@googlemaps/markerclusterer';
 	import Icon from '@iconify/svelte';
+	import Title from '$lib/components/ui/Title.svelte';
 	const flash = getFlash(page);
 
 	let { data }: PageProps = $props();
@@ -188,6 +189,13 @@
 		<div class="flex items-center gap-2">
 			<Icon icon="mdi:location" width="24" height="24" class="text-black-700" />
 			<span>Advanced Locations</span>
+		</div>
+	</div>
+
+	<!-- Card for interacting with the map-->
+	<div class="col-span-1 flex flex-col items-center justify-center gap-12">
+		<div class="flex flex-col items-center">
+			<Title title="Games Near Me"></Title>
 		</div>
 	</div>
 </section>

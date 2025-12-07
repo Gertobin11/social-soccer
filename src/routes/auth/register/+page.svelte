@@ -4,6 +4,7 @@
 	import type { PageProps } from './$types';
 	import { setError, setMessage, superForm } from 'sveltekit-superforms/client';
 	import SlidingImage from '$lib/components/ui/SlidingImage.svelte';
+	import Title from '$lib/components/ui/Title.svelte';
 
 	let { data }: PageProps = $props();
 
@@ -36,7 +37,9 @@
 			use:enhance
 			class="flex max-w-80 flex-col gap-3 bg-white p-8 shadow-xl md:max-w-[400px]"
 		>
-			<h1 class="h1">Register</h1>
+			<div class="flex flex-col items-center">
+				<Title title="Register"></Title>
+			</div>
 			{#if $message}<h3>{$message}</h3>{/if}
 			<label class="label">
 				Email

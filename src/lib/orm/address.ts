@@ -73,7 +73,7 @@ export async function findNearestGames(longitude: number, latitude: number, amou
       ST_AsGeoJSON(c.location) as location,
       ST_Distance(
         c.location, 
-        ST_SetSRID(ST_MakePoint(${latitude}, ${longitude}), 4326)::geography
+        ST_SetSRID(ST_MakePoint(${longitude}, ${latitude}), 4326)::geography
       ) as distance
     FROM "Game" g
     JOIN "Address" a ON g."locationID" = a.id

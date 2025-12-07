@@ -4,6 +4,7 @@
 	import type { PageProps } from './$types';
 	import { setError, setMessage, superForm } from 'sveltekit-superforms/client';
 	import SlidingImage from '$lib/components/ui/SlidingImage.svelte';
+	import Title from '$lib/components/ui/Title.svelte';
 
 	let { data }: PageProps = $props();
 
@@ -34,9 +35,11 @@
 			method="POST"
 			action="?/login"
 			use:enhance
-			class="flex max-w-80 flex-col gap-3 bg-white p-8 shadow-xl rounded md:max-w-[400px]"
+			class="flex max-w-80 flex-col gap-3 rounded bg-white p-8 shadow-xl md:max-w-[400px]"
 		>
-			<h1 class="h1">Log In</h1>
+			<div class="flex flex-col items-center">
+				<Title title="Login"></Title>
+			</div>
 			{#if $message}<h3>{$message}</h3>{/if}
 			<label class="label">
 				Email<br />
@@ -65,7 +68,7 @@
 			{#if $errors.password}<span class="text-error-500">{$errors.password}</span>{/if}
 
 			<div class="my-4 flex justify-center">
-				<button class="btn button-reg">Submit</button>
+				<button class="button-reg btn">Submit</button>
 			</div>
 			<div class="flex w-full justify-end">
 				<a class="text-surface-600 underline hover:text-surface-400" href="/auth/password-reset"

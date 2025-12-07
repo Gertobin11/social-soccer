@@ -52,7 +52,7 @@
 						<!-- Level Chip -->
 						<div>
 							<span class="text-sm font-medium text-gray-500 dark:text-gray-400">Level</span>
-							<div class="ml-2 badge preset-filled-primary-500 text-lg">Intermediate</div>
+							<div class="ml-2 badge preset-filled-primary-500 text-lg">{data.gameData.level}</div>
 						</div>
 
 						<!-- Date & Time -->

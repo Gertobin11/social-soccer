@@ -1,5 +1,6 @@
 <script lang="ts">
 	import SlidingImage from '$lib/components/ui/SlidingImage.svelte';
+	import Title from '$lib/components/ui/Title.svelte';
 </script>
 
 <!-- a 2 panel layout for large screens and single column for mobiles -->
@@ -10,13 +11,17 @@
 		<SlidingImage imageSrc="/verified-image.webp" />
 	</div>
 
-	<!--COnfirm verification div -->
+	<!--Confirm verification div -->
 	<div class="col-span-1 flex items-center justify-center">
-        <div class="prose">
-		<h1 class="h1">Verification Successful</h1>
-		<p >Thank you for verifying your email. You now have full access to the site</p>
+		<div class="prose">
+			<div class="flex flex-col items-center">
+				<Title title="Login"></Title>
+			</div>
+			<p>Thank you for verifying your email. You now have full access to the site</p>
 
-        <!-- TODO CTA find a game -->
-        </div>
+			<a href="/game/map" class="alt-button flex w-full items-center justify-center my-8"
+				>Find a game
+			</a>
+		</div>
 	</div>
 </section>

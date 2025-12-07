@@ -8,6 +8,7 @@
 	import { getFlash } from 'sveltekit-flash-message';
 	import { page } from '$app/state';
 	import { parseGeocodeAddress } from '$lib/client/location';
+	import Title from '$lib/components/ui/Title.svelte';
 	const flash = getFlash(page);
 
 	let { data }: PageProps = $props();
@@ -30,8 +31,8 @@
 
 	$effect(() => {
 		if ($addressMessage === 'Address Validated') {
-            console.log($addressForm.city)
-            console.log($addressForm.addressID)
+			console.log($addressForm.city);
+			console.log($addressForm.addressID);
 			addressComplete = true;
 			$addressMessage = '';
 			if ($addressForm.addressID) {
@@ -117,16 +118,18 @@
 	</div>
 
 	<!-- the address form -->
-	<div class="col-span-1 flex items-center justify-center">
-		<div class="bg-white p-8 shadow-xl md:max-w-[450px]">
-			<h1 class="h1">Create a Game</h1>
+	<div class="col-span-1 flex flex-col items-center justify-center">
+		<div class="col-span-1 flex flex-col items-center md:col-span-3">
+			<Title title="Create a Game"></Title>
+		</div>
+		<div class="bg-white p-8 shadow-xl md:max-w-[450px] w-full flex flex-col items-center">
 			{#if !addressComplete}
-				<h2 class="py-3 h2 text-gray-500">Address Details</h2>
+				<h2 class="py-3 text-2xl text-gray-500">Address Details</h2>
 				<form
 					method="POST"
 					action="?/createAddress"
 					use:addressEnhance
-					class="flex max-w-80 flex-col gap-3"
+					class="flex max-w-80 flex-col gap-3 w-full"
 				>
 					{#if $addressMessage}<h3>{$addressMessage}</h3>{/if}
 					<!-- Address Line 1-->
@@ -216,7 +219,7 @@
 						{...$addressConstraints.addressID}
 					/>
 
-                    <!-- hidden input for latitude -->
+					<!-- hidden input for latitude -->
 					<input
 						name="latitude"
 						type="hidden"
@@ -225,7 +228,7 @@
 						{...$addressConstraints.latitude}
 					/>
 
-                     <!-- hidden input for longitude -->
+					<!-- hidden input for longitude -->
 					<input
 						name="longitude"
 						type="hidden"
@@ -239,8 +242,8 @@
 					</div>
 				</form>
 			{:else}
-				<h2 class="py-3 h2 text-gray-500">Game Details</h2>
-				<form method="POST" action="?/createGame" use:enhance class="flex max-w-80 flex-col gap-3">
+				<h2 class="py-3 text-2xl text-gray-500">Game Details</h2>
+				<form method="POST" action="?/createGame" use:enhance class="flex max-w-80 flex-col gap-3 w-full">
 					{#if $message}<h3>{$message}</h3>{/if}
 
 					<!-- Day -->
@@ -305,7 +308,7 @@
 					{#if $errors.numberOfPlayers}<span class="text-error-500">{$errors.numberOfPlayers}</span
 						>{/if}
 
-                        <!-- hidden input for address id in the create game form -->
+					<!-- hidden input for address id in the create game form -->
 					<input
 						name="addressID"
 						type="hidden"
@@ -313,7 +316,6 @@
 						bind:value={$form.addressID}
 						{...$constraints.addressID}
 					/>
-
 
 					<div class="my-4 flex justify-center gap-3">
 						<button

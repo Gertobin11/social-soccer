@@ -4,6 +4,7 @@
 	import type { PageProps } from './$types';
 	import { setError, setMessage, superForm } from 'sveltekit-superforms/client';
 	import SlidingImage from '$lib/components/ui/SlidingImage.svelte';
+	import Title from '$lib/components/ui/Title.svelte';
 
 	let { data }: PageProps = $props();
 
@@ -31,7 +32,9 @@
     <!-- the login form -->
 	<div class="col-span-1 flex justify-center items-center h-full">
 		<form method="POST" action="?/reset" use:enhance class="flex max-w-80 md:max-w-[400px] flex-col gap-3 shadow-xl p-8 bg-white">
-            <h1 class="h1">Reset Password</h1>
+            <div class="flex flex-col items-center">
+				<Title title="Reset Password"></Title>
+			</div>
 			{#if $message}<h3>{$message}</h3>{/if}
 			<label class="label">
 				Email<br />

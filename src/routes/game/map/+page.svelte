@@ -12,6 +12,7 @@
 	import { daysOfTheWeek } from '$lib/client/utils';
 	import { Level } from '@prisma/client';
 	import { buildMapCard, createMarkers } from '$lib/client/games';
+	import Title from '$lib/components/ui/Title.svelte';
 	const flash = getFlash(page);
 
 	let { data }: PageProps = $props();
@@ -134,7 +135,10 @@
 	</div>
 
 	<!-- Card for interacting with the map-->
-	<div class="col-span-1 flex items-center justify-center">
+	<div class="col-span-1 flex flex-col gap-12 items-center justify-center">
+        	<div class="flex flex-col items-center">
+		<Title title="View Games"></Title>
+	</div>
 		<div class="w-full max-w-[400px] rounded border-2 border-gray-200 bg-white p-8 shadow-xl">
 			<h3 class="h3">Filter Results</h3>
 			<form class="flex flex-col gap-3" onsubmit={handleFilter}>
