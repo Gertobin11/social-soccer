@@ -1,6 +1,6 @@
 import type { MapGameData } from '$lib/server/game';
 import { importLibrary } from '@googlemaps/js-api-loader';
-import type { Prisma, Rating } from '@prisma/client';
+import type { Level, Prisma, Rating } from '@prisma/client';
 
 export function getAverageRating(ratings: Rating[]) {
 	if (ratings.length > 0) {
@@ -70,24 +70,7 @@ export async function createMarkers(
 ) {
 	const { AdvancedMarkerElement, PinElement } = await importLibrary('marker');
 	return currentGameData.map((gameData, i) => {
-		let colour = 'green';
-		switch (gameData.level) {
-			case 'BEGINNER':
-				colour = 'green';
-				break;
-			case 'RECREATIONAL':
-				colour = 'blue';
-				break;
-			case 'INTERMEDITE':
-				colour = 'orange';
-				break;
-			case 'COMPETITIVE':
-				colour = 'red';
-				break;
-			case 'ADVANCED':
-				colour = 'black';
-				break;
-		}
+		let colour = getLevelColour(gameData.level);
 		const title = `${gameData.level}`;
 		const pinTextGlyph = new PinElement({
 			glyphColor: 'white',
@@ -119,4 +102,21 @@ export async function createMarkers(
 		});
 		return marker;
 	});
+}
+
+export function getLevelColour(level: Level) {
+	switch (level) {
+		case 'BEGINNER':
+			return 'green';
+		case 'RECREATIONAL':
+			return 'blue';
+		case 'INTERMEDITE':
+			return 'orange';
+		case 'COMPETITIVE':
+			return 'red';
+		case 'ADVANCED':
+			return 'black';
+		default:
+			return 'green';
+	}
 }

@@ -3,6 +3,7 @@
 	import { importLibrary, setOptions } from '@googlemaps/js-api-loader';
 	import Icon from '@iconify/svelte';
 	import type { PageProps } from './$types';
+	import { getLevelColour } from '$lib/client/games';
 	let { data }: PageProps = $props();
 
 	let mapElement: HTMLDivElement;
@@ -36,7 +37,7 @@
 </script>
 
 <!-- A single card, displaying the game details -->
-<section class="min-h-[calc(100vh-4rem)] flex items-center justify-center">
+<section class="flex min-h-[calc(100vh-4rem)] items-center justify-center">
 	<!-- show details of the requested game to join-->
 	<div class="flex h-full items-center justify-center">
 		<div class="w-full max-w-4xl overflow-hidden rounded-lg bg-white shadow-xl">
@@ -52,7 +53,14 @@
 						<!-- Level Chip -->
 						<div>
 							<span class="text-sm font-medium text-gray-500 dark:text-gray-400">Level</span>
-							<div class="ml-2 badge preset-filled-primary-500 text-lg">{data.gameData.level}</div>
+							<div
+								class="ml-2 badge text-white bg-{getLevelColour(data.gameData.level)}{data.gameData
+									.level !== 'ADVANCED'
+									? '-500'
+									: ''} text-lg"
+							>
+								{data.gameData.level}
+							</div>
 						</div>
 
 						<!-- Date & Time -->

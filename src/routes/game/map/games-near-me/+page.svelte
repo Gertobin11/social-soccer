@@ -9,6 +9,8 @@
 	import * as MarkerClusterer from '@googlemaps/markerclusterer';
 	import Icon from '@iconify/svelte';
 	import Title from '$lib/components/ui/Title.svelte';
+	import type { Level } from '@prisma/client';
+	import { getLevelColour } from '$lib/client/games';
 	const flash = getFlash(page);
 
 	let { data }: PageProps = $props();
@@ -45,24 +47,7 @@
 			});
 
 			const markers = currentGameData.map((gameData, i) => {
-				let colour = 'green';
-				switch (gameData.level) {
-					case 'BEGINNER':
-						colour = 'green';
-						break;
-					case 'RECREATIONAL':
-						colour = 'blue';
-						break;
-					case 'INTERMEDITE':
-						colour = 'orange';
-						break;
-					case 'COMPETITIVE':
-						colour = 'red';
-						break;
-					case 'ADVANCED':
-						colour = 'black';
-						break;
-				}
+				let colour = getLevelColour(gameData.level)
 				const title = `${gameData.level}`;
 				const pinTextGlyph = new PinElement({
 					glyphColor: 'white',
@@ -193,9 +178,31 @@
 	</div>
 
 	<!-- Card for interacting with the map-->
-	<div class="col-span-1 flex flex-col items-center justify-center gap-12">
+	<div
+		class="col-span-1 flex h-[calc(100vh-4rem)] flex-col items-center justify-start gap-12 overflow-y-auto pt-12"
+	>
 		<div class="flex flex-col items-center">
 			<Title title="Games Near Me"></Title>
+		</div>
+		<div class="flex w-full flex-col items-center justify-start gap-3">
+			{#each currentGameData as gameData}
+				<div class="w-2/3 overflow-hidden rounded-lg bg-white shadow-xl">
+					<div>
+						<h2
+							class="py-2 pr-4 pl-4 text-lg text-white bg-{getLevelColour(
+								gameData.level
+							)}{gameData.level !== 'ADVANCED' ? '-500' : ''}"
+						>
+							{gameData.level}
+						</h2>
+					</div>
+					<div class="p-4">
+						<p>{gameData.day} - {gameData.time}</p>
+						<p>{(gameData.distance / 1000).toFixed(2)} km from you</p>
+						<a href={`/game/view/${gameData.id}`} class="font-semibold underline">View Details</a>
+					</div>
+				</div>
+			{/each}
 		</div>
 	</div>
 </section>

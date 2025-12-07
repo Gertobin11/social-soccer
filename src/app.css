@@ -18,6 +18,10 @@
 	@apply from-primary-500 to-secondary-500 shadow-primary-500/20 hover:from-secondary-500 hover:to-secondary-500 w-full transform rounded-full bg-gradient-to-r px-6 pb-1 pt-2 font-semibold text-white shadow-xl transition-all hover:scale-105 sm:w-auto;
 }
 
+.button-small {
+	@apply from-primary-500 to-secondary-500 shadow-primary-500/20 hover:from-secondary-500 hover:to-secondary-500 w-full transform rounded-full bg-gradient-to-r px-3  pt-1 font-semibold text-white shadow-xl transition-all hover:scale-105 sm:w-auto;
+}
+
 .alt-button {
 	@apply from-secondary-500 to-primary-500 shadow-primary-500/20 hover:from-primary-500 hover:to-primary-500 w-full transform rounded-full bg-gradient-to-r px-10 pb-3 pt-4 text-lg font-bold text-white shadow-xl transition-all hover:scale-105 sm:w-auto;
 }
