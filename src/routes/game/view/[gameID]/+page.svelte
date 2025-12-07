@@ -11,7 +11,7 @@
 
 	onMount(async () => {
 		setOptions({
-			key: 'AIzaSyD-N4_aJYEE7htoSQAPugjCxfGIZZroAz0'
+			key: data.googleMapAPIKey
 		});
 
 		const { Map } = await importLibrary('maps');

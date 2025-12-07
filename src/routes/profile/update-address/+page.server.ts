@@ -6,6 +6,7 @@ import { addressSchema } from '$lib/validation/auth';
 import { createAddressFromForm, getDecryptedAddress } from '$lib/server/address';
 import { addAddressToUser, getUserByID } from '$lib/orm/user';
 import { getCoordinateByID } from '$lib/orm/address';
+import { env } from '$env/dynamic/private';
 
 export const load: PageServerLoad = async (event) => {
 	// redirect to the homepage if the user is not signed in
@@ -46,7 +47,9 @@ export const load: PageServerLoad = async (event) => {
 			}
 		});
 
-		return { addressForm };
+        const googleMapAPIKey = env.GOOGLE_MAP_API_KEY
+
+		return { addressForm, googleMapAPIKey };
 	} catch (error) {
 		return redirect(
 			'/',

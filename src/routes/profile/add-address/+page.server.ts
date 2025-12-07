@@ -5,6 +5,7 @@ import { zod4 } from 'sveltekit-superforms/adapters';
 import { addressSchema } from '$lib/validation/auth';
 import { createAddressFromForm } from '$lib/server/address';
 import { addAddressToUser } from '$lib/orm/user';
+import { env } from '$env/dynamic/private';
 
 export const load: PageServerLoad = async (event) => {
 	// redirect to the homepage if the user is not signed in
@@ -16,8 +17,9 @@ export const load: PageServerLoad = async (event) => {
 		);
 	}
 	const addressForm = await superValidate(zod4(addressSchema));
+    const googleMapAPIKey = env.GOOGLE_MAP_API_KEY
 
-	return { addressForm };
+	return { addressForm, googleMapAPIKey };
 };
 
 export const actions: Actions = {

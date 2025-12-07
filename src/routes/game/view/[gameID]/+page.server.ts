@@ -15,6 +15,7 @@ import {
 } from '$lib/orm/game';
 import { getDecryptedAddress } from '$lib/server/address';
 import { getAddressByID } from '$lib/orm/address';
+import { env } from '$env/dynamic/private';
 
 export const load: PageServerLoad = async (event) => {
 	// redirect to the homepage if the user is not signed in
@@ -48,7 +49,9 @@ export const load: PageServerLoad = async (event) => {
 
 		const hasOpenRequest = joinRequest !== null && joinRequest.accepted === null;
 
-		return { gameData, game, location, isOwner, isCurrentPlayer, hasOpenRequest };
+        const googleMapAPIKey = env.GOOGLE_MAP_API_KEY
+
+		return { gameData, game, location, isOwner, isCurrentPlayer, hasOpenRequest, googleMapAPIKey };
 	} catch (error) {
 		return redirect(
 			'/',

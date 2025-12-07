@@ -23,7 +23,7 @@
 	onMount(async () => {
 		try {
 			setOptions({
-				key: 'AIzaSyD-N4_aJYEE7htoSQAPugjCxfGIZZroAz0'
+				key: data.googleMapAPIKey
 			});
 
 			// import the class for the map AND marker

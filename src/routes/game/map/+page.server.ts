@@ -5,6 +5,7 @@ import { getLatestGames } from '$lib/orm/game';
 import { superValidate } from 'sveltekit-superforms';
 import { filterGameSchema } from '$lib/validation/game';
 import { zod4 } from "sveltekit-superforms/adapters";
+import { env } from '$env/dynamic/private';
 
 export const load: PageServerLoad = async (event) => {
 	// set the logged in state for showing additional functionality 
@@ -19,7 +20,9 @@ export const load: PageServerLoad = async (event) => {
 		for (let game of games) {
 			gameDataArray.push(await buildGameDataForMap(game));
 		}
-		return { gameDataArray, loggedIn, form };
+
+        const googleMapAPIKey = env.GOOGLE_MAP_API_KEY
+		return { gameDataArray, loggedIn, form, googleMapAPIKey };
 	} catch (errorObject) {
 		return redirect(
 			'/',

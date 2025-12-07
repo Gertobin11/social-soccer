@@ -6,6 +6,7 @@ import { createGameSchema } from '$lib/validation/game';
 import { addressSchema } from '$lib/validation/auth';
 import { createAddressFromForm } from '$lib/server/address';
 import { createGameFromForm } from '$lib/server/game';
+import { env } from '$env/dynamic/private';
 
 export const load: PageServerLoad = async (event) => {
 	// redirect to the homepage if the user is not signed in
@@ -18,8 +19,9 @@ export const load: PageServerLoad = async (event) => {
 	}
 	const gameDetailsForm = await superValidate(zod4(createGameSchema));
 	const addressForm = await superValidate(zod4(addressSchema));
+    const googleMapAPIKey = env.GOOGLE_MAP_API_KEY
 
-	return { gameDetailsForm, addressForm };
+	return { gameDetailsForm, addressForm, googleMapAPIKey };
 };
 
 export const actions: Actions = {

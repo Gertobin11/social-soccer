@@ -4,6 +4,7 @@ import { getUserByID } from '$lib/orm/user';
 import { ProfileError } from '$lib/server/user';
 import { buildClosestGameData } from '$lib/server/game';
 import { findNearestGames, getCoordinateByID } from '$lib/orm/address';
+import { env } from '$env/dynamic/private';
 
 export const load: PageServerLoad = async (event) => {
 	// redirect to the homepage if the user is not signed in
@@ -26,13 +27,19 @@ export const load: PageServerLoad = async (event) => {
 			throw new ProfileError('Profile not complete, no address found');
 		}
 
-        const userCoordinates = await getCoordinateByID(user.address.coordinatesID)
+		const userCoordinates = await getCoordinateByID(user.address.coordinatesID);
 
-    const nearestGames = await findNearestGames(userCoordinates.location.coordinates[1], userCoordinates.location.coordinates[0], 10)
+		const nearestGames = await findNearestGames(
+			userCoordinates.location.coordinates[1],
+			userCoordinates.location.coordinates[0],
+			10
+		);
 
-        const nearestGameData = await buildClosestGameData(nearestGames)
+		const nearestGameData = await buildClosestGameData(nearestGames);
 
-        return {nearestGameData}
+        const googleMapAPIKey = env.GOOGLE_MAP_API_KEY
+
+		return { nearestGameData, googleMapAPIKey };
 	} catch (error) {
 		if (error instanceof ProfileError) {
 			return redirect(
