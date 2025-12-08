@@ -9,12 +9,11 @@ import {
 	updateAddress
 } from '$lib/orm/address';
 import { createGame } from '$lib/orm/game';
-import { createUser } from '$lib/orm/user';
 import { decrypt } from '$lib/server/encryption';
 import prisma from '$lib/server/prisma';
-import { hash } from '@node-rs/argon2';
 import { Level } from '@prisma/client';
 import { afterEach, beforeEach, describe, expect, it } from 'vitest';
+import { withAddress, withUser } from '../../fixtures';
 
 describe('createCoordinates', () => {
 	beforeEach(async () => {
@@ -95,13 +94,7 @@ describe('findNearestGames', () => {
 		await prisma.game.deleteMany();
 	});
 	it('should return an array of games closest to the longitude latitude passed in', async () => {
-		const passwordHash = await hash('test password', {
-			memoryCost: 19456,
-			timeCost: 2,
-			outputLen: 32,
-			parallelism: 1
-		});
-		const user = await createUser('abcderasa', 'test@gmail.com', passwordHash);
+		const user = await withUser();
 		let longitude = 52.2675;
 		let latitude = 9.6962;
 		let nearest: number[] = [];
@@ -289,17 +282,3 @@ describe('deleteCoordinatesByID', () => {
 		);
 	});
 });
-
-async function withAddress(longitude: number, latitude: number, i: number) {
-	const coordinates = await createCoordinates(longitude + i, latitude + i);
-	let addressData: AddressFields = {
-		lineOne: `No. ${i}`,
-		lineTwo: 'Main Street',
-		city: 'Tralee',
-		county: 'Kerry',
-		country: 'IE',
-		eircode: 'v92adc4'
-	};
-	let address = await createAddress(addressData, coordinates);
-	return address;
-}

@@ -23,10 +23,10 @@ export function generateToken() {
 }
 
 export async function createSession(token: string, userID: string) {
-	const sessionId = encodeHexLowerCase(sha256(new TextEncoder().encode(token)));
+	const sessionID = encodeHexLowerCase(sha256(new TextEncoder().encode(token)));
     const expiresAt = new Date(Date.now() + DAY_IN_MS * 30)
 
-    const session = await saveSession(sessionId, userID, expiresAt)
+    const session = await saveSession(sessionID, userID, expiresAt)
 	return session;
 }
 
