@@ -2,9 +2,8 @@ import { createAddress, createCoordinates } from '$lib/orm/address';
 import { createUser } from '$lib/orm/user';
 import { hash } from '@node-rs/argon2';
 
-export async function withAddress(longitude: number, latitude: number, i: number) {
-	const coordinates = await createCoordinates(longitude + i, latitude + i);
-	let addressData: AddressFields = {
+export function getAddressData(i: number) {
+	return {
 		lineOne: `No. ${i}`,
 		lineTwo: 'Main Street',
 		city: 'Tralee',
@@ -12,6 +11,11 @@ export async function withAddress(longitude: number, latitude: number, i: number
 		country: 'IE',
 		eircode: 'v92adc4'
 	};
+}
+
+export async function withAddress(longitude: number, latitude: number, i: number) {
+	const coordinates = await createCoordinates(longitude + i, latitude + i);
+	let addressData: AddressFields = getAddressData(i)
 	let address = await createAddress(addressData, coordinates);
 	return address;
 }
@@ -28,7 +32,7 @@ export async function withUser() {
 }
 
 export async function withAdditionalUser(email: string) {
-    const id = email.split("@")[0]
+	const id = email.split('@')[0];
 	const passwordHash = await hash('test password', {
 		memoryCost: 19456,
 		timeCost: 2,

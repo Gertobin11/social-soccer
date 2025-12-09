@@ -47,7 +47,7 @@ export async function performUpdate(data: AddressFields, coordinatesID: number) 
 	let previousCoordiantesID: number | undefined = undefined;
 
 	if (!data.addressID) {
-		throw new Error('No addressID present in the fom');
+		throw new Error('No addressID present in the form');
 	}
 
 	const address = await getAddress(data.addressID);
