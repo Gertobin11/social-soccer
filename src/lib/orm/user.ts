@@ -34,7 +34,8 @@ export async function createUser(userID: string, email: string, passwordHash: st
             email,
             emailVerified: false,
             passwordHash
-        }
+        },
+        include: {ratings: true}
     });
 }
 

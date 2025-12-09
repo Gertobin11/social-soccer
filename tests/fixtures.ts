@@ -1,6 +1,6 @@
-import { createAddress, createCoordinates } from "$lib/orm/address";
-import { createUser } from "$lib/orm/user";
-import { hash } from "@node-rs/argon2";
+import { createAddress, createCoordinates } from '$lib/orm/address';
+import { createUser } from '$lib/orm/user';
+import { hash } from '@node-rs/argon2';
 
 export async function withAddress(longitude: number, latitude: number, i: number) {
 	const coordinates = await createCoordinates(longitude + i, latitude + i);
@@ -17,13 +17,24 @@ export async function withAddress(longitude: number, latitude: number, i: number
 }
 
 export async function withUser() {
-    const passwordHash = await hash('test password', {
-        memoryCost: 19456,
-        timeCost: 2,
-        outputLen: 32,
-        parallelism: 1
-    });
-    const user = await createUser('abcderasa', 'test@gmail.com', passwordHash);
-    return user;
+	const passwordHash = await hash('test password', {
+		memoryCost: 19456,
+		timeCost: 2,
+		outputLen: 32,
+		parallelism: 1
+	});
+	const user = await createUser('abcderasa', 'test@gmail.com', passwordHash);
+	return user;
 }
 
+export async function withAdditionalUser(email: string) {
+    const id = email.split("@")[0]
+	const passwordHash = await hash('test password', {
+		memoryCost: 19456,
+		timeCost: 2,
+		outputLen: 32,
+		parallelism: 1
+	});
+	const user = await createUser(id, email, passwordHash);
+	return user;
+}

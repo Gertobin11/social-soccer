@@ -16,6 +16,14 @@ export default defineConfig({
         setupFiles: ['./tests/setup.ts'],
 		expect: { requireAssertions: true },
 		projects: [
+            {
+				extends: './vite.config.ts',
+				test: {
+					name: 'orm',
+					environment: 'node',
+					include: ['tests/lib/orm/*'],
+				}
+			},
 			{
 				extends: './vite.config.ts',
 				test: {
