@@ -15,7 +15,7 @@ import type { Address } from '@prisma/client';
  * or if there is a previous address, it calls the orm to update the address with
  * the new coordinates, then calls the orm to  delete the old cordinates
  * @param form The submitted supervalidated form
- * @returns
+ * @returns Promise<number>
  */
 export async function createAddressFromForm(form: SuperValidated<AddressData>) {
 	let newAddress: Address;

@@ -28,18 +28,16 @@ export async function addNamesToUser(userID: string, firstName: string, lastName
  * @returns Promise<User>
  */
 export async function createUser(userID: string, email: string, passwordHash: string) {
-    return await prisma.user.create({
-        data: {
-            id: userID,
-            email,
-            emailVerified: false,
-            passwordHash
-        },
-        include: {ratings: true}
-    });
+	return await prisma.user.create({
+		data: {
+			id: userID,
+			email,
+			emailVerified: false,
+			passwordHash
+		},
+		include: { ratings: true }
+	});
 }
-
-
 
 /**
  * function that looks up a user object by its id
@@ -65,7 +63,7 @@ export async function getUserByID(id: string) {
 /**
  * Function that looks up a user by eail and returns the User or null
  * @param email the email of the user
- * @returns User | null
+ * @returns Promise<User | null>
  */
 export async function getUserByEmail(email: string) {
 	return await prisma.user.findUnique({
@@ -76,12 +74,13 @@ export async function getUserByEmail(email: string) {
 }
 
 /**
- * FUnction that links a user to an address
+ * Function that links a user to an address
  * @param userID the users ID
  * @param addressID the address' ID
+ * @returns Promise<User>
  */
 export async function addAddressToUser(userID: string, addressID: number) {
-	await prisma.user.update({
+	return await prisma.user.update({
 		where: {
 			id: userID
 		},
@@ -93,6 +92,13 @@ export async function addAddressToUser(userID: string, addressID: number) {
 
 export type UserWithRatings = Prisma.UserGetPayload<{ include: { ratings: true } }>;
 
+/**
+ * Function that creates a rating for a player in the passes game
+ * @param userID the ID of the user to rate
+ * @param gameID the game which the user is rated from
+ * @param rating the rating of the user
+ * @returns Promise<Rating>
+ */
 export async function createRating(userID: string, gameID: number, rating: number) {
 	return await prisma.rating.create({
 		data: {
@@ -112,13 +118,17 @@ export async function updateRating(userID: string, gameID: number, rating: numbe
 			}
 		},
 		data: {
-			playerID: userID,
-			gameID,
 			rating
 		}
 	});
 }
 
+/**
+ * Function that queries the database for a rating that matches the user and payer ID's
+ * @param userID the id of the user who has the rating
+ * @param gameID the game id in which the user was rated
+ * @returns Promise<Rating | null>
+ */
 export async function getRating(userID: string, gameID: number) {
 	return await prisma.rating.findUnique({
 		where: {
