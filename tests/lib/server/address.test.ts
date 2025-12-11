@@ -8,6 +8,13 @@ import { zod4 } from 'sveltekit-superforms/adapters';
 import prisma from '$lib/server/prisma';
 
 describe('createAddressFromForm', () => {
+    beforeEach(() => {
+        vi.restoreAllMocks()
+    })
+
+    afterEach(() => {
+        vi.restoreAllMocks()
+    })
 	it('should create an address from a passed form', async () => {
 		const createAddressMock = vi.fn().mockResolvedValue({ id: 1 });
 		const createCoordinatesMock = vi.fn();
@@ -60,6 +67,13 @@ describe('createAddressFromForm', () => {
 });
 
 describe('performUpdate', () => {
+    beforeEach(() => {
+        vi.restoreAllMocks()
+    })
+
+    afterEach(() => {
+        vi.restoreAllMocks()
+    })
 	it('should make a call to update the address', async () => {
 		const updateAddressMock = vi.fn().mockResolvedValue({ success: true });
 		const getAddressMock = vi.fn();
@@ -142,6 +156,13 @@ describe('getDecryptedAddress', () => {
 
 
 describe('updateAddressFromForm', () => {
+    beforeEach(() => {
+        vi.restoreAllMocks()
+    })
+
+    afterEach(() => {
+        vi.restoreAllMocks()
+    })
 	it('should update an address from a passed form if the form has an addressID', async () => {
 		const updateAddressMock = vi.fn().mockResolvedValue({ id: 1 });
 		const createCoordinatesMock = vi.fn().mockReturnValue(2);

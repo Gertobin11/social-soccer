@@ -1,6 +1,6 @@
 import { afterEach, beforeEach, describe, expect, expectTypeOf, it, vi } from 'vitest';
 import {
-    createEmailVerificationToken,
+	createEmailVerificationToken,
 	createSession,
 	DAY_IN_MS,
 	deleteSessionTokenCookie,
@@ -31,10 +31,12 @@ describe('generateToken', () => {
 describe('createSession', () => {
 	beforeEach(() => {
 		vi.useFakeTimers();
+		vi.restoreAllMocks();
 	});
 
 	afterEach(() => {
 		vi.useRealTimers();
+		vi.restoreAllMocks();
 	});
 	it('should make a call to the save session with the hexidecimal version of the token', async () => {
 		const date = new Date(2000, 1, 1, 13);
@@ -52,6 +54,13 @@ describe('createSession', () => {
 });
 
 describe('validateSessionToken', () => {
+	beforeEach(() => {
+		vi.restoreAllMocks();
+	});
+
+	afterEach(() => {
+		vi.restoreAllMocks();
+	});
 	it('should return the session object that matches the token', async () => {
 		const validDate = DateTime.now().plus({ days: 24 });
 		const sessionString = 'testString';
@@ -121,10 +130,17 @@ const createMockEvent = (): MockRequestEvent => ({
 });
 
 describe('setSessionTokenCookie', () => {
+	beforeEach(() => {
+		vi.restoreAllMocks();
+	});
+
+	afterEach(() => {
+		vi.restoreAllMocks();
+	});
 	it('should call event.cookies.set with the correct name, token, and options', () => {
 		const eventMock = createMockEvent();
 		const testToken = 'test token';
-		const testExpiresAt = DateTime.now().plus({days:30}).toJSDate()
+		const testExpiresAt = DateTime.now().plus({ days: 30 }).toJSDate();
 
 		setSessionTokenCookie(eventMock as any, testToken, testExpiresAt);
 
@@ -137,6 +153,13 @@ describe('setSessionTokenCookie', () => {
 });
 
 describe('deleteSessionTokenCookie', () => {
+	beforeEach(() => {
+		vi.restoreAllMocks();
+	});
+
+	afterEach(() => {
+		vi.restoreAllMocks();
+	});
 	it('should call event.cookies.delete with the correct cookie name and path', () => {
 		const eventMock = createMockEvent();
 
@@ -147,75 +170,102 @@ describe('deleteSessionTokenCookie', () => {
 	});
 });
 
-describe("generateUserId", () => {
-    it("should generate a random string to be used as a userID", () => {
-        let result = generateUserId()
-        expectTypeOf(result).toEqualTypeOf("string")
-        expect(result.length).toBe(24)
-    })
-})
+describe('generateUserId', () => {
+	it('should generate a random string to be used as a userID', () => {
+		let result = generateUserId();
+		expectTypeOf(result).toEqualTypeOf('string');
+		expect(result.length).toBe(24);
+	});
+});
 
-describe("createEmailVerificationToken", () => {
-    it("should make a call to delete previous tokens and create a new token", async ()=> {
-        const deleteAllEmailVerificationTokensMock = vi.fn()
-        const saveEmailVerificationTokenMock = vi.fn()
-        vi.spyOn(authORMModule, 'deleteAllEmailVerificationTokens').mockImplementation(deleteAllEmailVerificationTokensMock)
-        vi.spyOn(authORMModule, 'saveEmailVerificationToken').mockImplementation(saveEmailVerificationTokenMock)
+describe('createEmailVerificationToken', () => {
+	beforeEach(() => {
+		vi.restoreAllMocks();
+	});
 
-        const result = await createEmailVerificationToken("test user id")
+	afterEach(() => {
+		vi.restoreAllMocks();
+	});
+	it('should make a call to delete previous tokens and create a new token', async () => {
+		const deleteAllEmailVerificationTokensMock = vi.fn();
+		const saveEmailVerificationTokenMock = vi.fn();
+		vi.spyOn(authORMModule, 'deleteAllEmailVerificationTokens').mockImplementation(
+			deleteAllEmailVerificationTokensMock
+		);
+		vi.spyOn(authORMModule, 'saveEmailVerificationToken').mockImplementation(
+			saveEmailVerificationTokenMock
+		);
 
-        expect(deleteAllEmailVerificationTokensMock).toHaveBeenCalledWith("test user id")
+		const result = await createEmailVerificationToken('test user id');
 
-        expect(saveEmailVerificationTokenMock).toHaveBeenCalledOnce()
+		expect(deleteAllEmailVerificationTokensMock).toHaveBeenCalledWith('test user id');
 
-        expect(result.length).toBe(24)
-        expectTypeOf(result).toEqualTypeOf("string")
-    })
-})
+		expect(saveEmailVerificationTokenMock).toHaveBeenCalledOnce();
 
-describe("validateEmailVerificationToken", () => {
-    it("should return the linked userID from the token", async () => {
-        const validDate = DateTime.now().plus({days: 1}).toMillis()
-        const getEmailValidationTokenMock = vi.fn().mockResolvedValue({
-            expires: validDate,
-            userID: "test user"
-        })
-        vi.spyOn(authORMModule, 'getEmailValidationToken').mockImplementation(getEmailValidationTokenMock)
-        const result = await validateEmailVerificationToken("test token")
+		expect(result.length).toBe(24);
+		expectTypeOf(result).toEqualTypeOf('string');
+	});
+});
 
-        expect(getEmailValidationTokenMock).toHaveBeenCalledWith("test token")
-        expect(result).toBe("test user")
-    })
+describe('validateEmailVerificationToken', () => {
+	beforeEach(() => {
+		vi.restoreAllMocks();
+	});
 
-    it("should throw an error if the token is expired", async () => {
-        const validDate = DateTime.now().minus({days: 1}).toMillis()
-        const getEmailValidationTokenMock = vi.fn().mockResolvedValue({
-            expires: validDate,
-            userID: "test user"
-        })
-        vi.spyOn(authORMModule, 'getEmailValidationToken').mockImplementation(getEmailValidationTokenMock)
-        await expect(validateEmailVerificationToken("test token")).rejects.toThrowError("Expired token")
+	afterEach(() => {
+		vi.restoreAllMocks();
+	});
+	it('should return the linked userID from the token', async () => {
+		const validDate = DateTime.now().plus({ days: 1 }).toMillis();
+		const getEmailValidationTokenMock = vi.fn().mockResolvedValue({
+			expires: validDate,
+			userID: 'test user'
+		});
+		vi.spyOn(authORMModule, 'getEmailValidationToken').mockImplementation(
+			getEmailValidationTokenMock
+		);
+		const result = await validateEmailVerificationToken('test token');
 
-    })
-})
+		expect(getEmailValidationTokenMock).toHaveBeenCalledWith('test token');
+		expect(result).toBe('test user');
+	});
+
+	it('should throw an error if the token is expired', async () => {
+		const validDate = DateTime.now().minus({ days: 1 }).toMillis();
+		const getEmailValidationTokenMock = vi.fn().mockResolvedValue({
+			expires: validDate,
+			userID: 'test user'
+		});
+		vi.spyOn(authORMModule, 'getEmailValidationToken').mockImplementation(
+			getEmailValidationTokenMock
+		);
+		await expect(validateEmailVerificationToken('test token')).rejects.toThrowError(
+			'Expired token'
+		);
+	});
+});
 
 describe('generatePasswordResetToken', () => {
 	beforeEach(() => {
 		vi.useFakeTimers();
+		vi.restoreAllMocks();
 	});
 
 	afterEach(() => {
 		vi.useRealTimers();
+		vi.restoreAllMocks();
 	});
 	it('should make a call to the create a password reset token', async () => {
 		const date = new Date(2000, 1, 1, 13);
 		vi.setSystemTime(date);
 		const generatePasswordResetTokenMock = vi.fn().mockResolvedValue('success');
-		vi.spyOn(authORMModule, 'createPasswordResetToken').mockImplementation(generatePasswordResetTokenMock);
+		vi.spyOn(authORMModule, 'createPasswordResetToken').mockImplementation(
+			generatePasswordResetTokenMock
+		);
 		const result = await generatePasswordResetToken('test user id');
 		expect(result.length).toBe(24);
-        expectTypeOf(result).toEqualTypeOf("string")
-		
-		expect(generatePasswordResetTokenMock).toHaveBeenCalledOnce()
+		expectTypeOf(result).toEqualTypeOf('string');
+
+		expect(generatePasswordResetTokenMock).toHaveBeenCalledOnce();
 	});
 });
