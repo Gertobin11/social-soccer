@@ -11,10 +11,14 @@ been refactored into the orm folder to decouple
 database calls from the server logic
 */
 
-const DAY_IN_MS = 1000 * 60 * 60 * 24;
+export const DAY_IN_MS = 1000 * 60 * 60 * 24;
 
 export const sessionCookieName = 'auth-session';
 
+/**
+ * Function that generates a random string to be used as a token
+ * @returns string
+ */
 export function generateToken() {
 	const bytes = crypto.getRandomValues(new Uint8Array(18));
 	const token = encodeBase64url(bytes);
@@ -22,6 +26,12 @@ export function generateToken() {
 	return token;
 }
 
+/**
+ * Function that creates a record of a session in the database and saves it as lowercase hexidecimal translation
+ * @param token a string token representing the session
+ * @param userID the ID of the user who the session is being linked to 
+ * @returns Promise<Session>
+ */
 export async function createSession(token: string, userID: string) {
 	const sessionID = encodeHexLowerCase(sha256(new TextEncoder().encode(token)));
     const expiresAt = new Date(Date.now() + DAY_IN_MS * 30)
@@ -30,6 +40,12 @@ export async function createSession(token: string, userID: string) {
 	return session;
 }
 
+/**
+ * Function that checks if a session token is valid, if it falls in the renewal date, the
+ * session expiry date gets extended
+ * @param token the string token to be validated
+ * @returns Promise<{session: Session, user: User}>
+ */
 export async function validateSessionToken(token: string) {
 	const sessionID = encodeHexLowerCase(sha256(new TextEncoder().encode(token)));
 
@@ -57,20 +73,41 @@ export async function validateSessionToken(token: string) {
 
 export type SessionValidationResult = Awaited<ReturnType<typeof validateSessionToken>>;
 
+/**
+ * Function that sets the session cookie
+ * @param event the request event
+ * @param token the string token to set as the cookie value
+ * @param expiresAt the exiration date of the cookie
+ */
 export function setSessionTokenCookie(event: RequestEvent, token: string, expiresAt: Date) {
 	event.cookies.set(sessionCookieName, token, { expires: expiresAt, path: '/' });
 }
 
+/**
+ * Function that deletes the session cookie
+ * @param event the request event
+ */
 export function deleteSessionTokenCookie(event: RequestEvent) {
 	event.cookies.delete(sessionCookieName, { path: '/' });
 }
 
+/**
+ * Function that generates a random string to be used for the userID
+ * @returns string
+ */
 export function generateUserId() {
 	const bytes = crypto.getRandomValues(new Uint8Array(15));
 	const id = encodeBase32LowerCase(bytes);
 	return id;
 }
 
+
+/**
+ * Function that deletes all previous email verification tokens
+ * and creates a new token
+ * @param userID The ID of the user who the email verification token is being created for
+ * @returns Promise<string>
+ */
 export async function createEmailVerificationToken(userID: string): Promise<string> {
 	// invalidate all existing tokens
     await deleteAllEmailVerificationTokens(userID);
@@ -82,6 +119,11 @@ export async function createEmailVerificationToken(userID: string): Promise<stri
 	return token;
 }
 
+/**
+ * Function that checks if the email verification token exists and it has not expired
+ * @param token the token value of the email verification object
+ * @returns Promise<string>
+ */
 export const validateEmailVerificationToken = async (token: string) => {
     // retrieving the token is performed insde a transaction, to keep it atomic
 	const storedToken = await getEmailValidationToken(token);
@@ -95,6 +137,11 @@ export const validateEmailVerificationToken = async (token: string) => {
 	return storedToken.userID;
 };
 
+/**
+ * Function that creates a password reset token 
+ * @param userID The ID of the user that the token is linked to
+ * @returns Promise<string>
+ */
 export async function generatePasswordResetToken(userID: string) {
     // TODO clean up old tokens
     const token = generateToken();
