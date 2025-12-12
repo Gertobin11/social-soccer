@@ -1,7 +1,5 @@
 import { sendPasswordRestEmail, sendVerificationEmail } from '$lib/server/email';
-import { afterEach, beforeEach, describe, expect, expectTypeOf, it, vi } from 'vitest';
-import * as nodemailer from 'nodemailer';
-import { verify } from 'crypto';
+import { afterEach, beforeEach, describe, expect,  it, vi } from 'vitest';
 
 const mocks = vi.hoisted(() => ({
 	verify: vi.fn(),

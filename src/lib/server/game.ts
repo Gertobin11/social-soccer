@@ -18,8 +18,8 @@ export type FilterGameData = z.infer<typeof filterGameSchema>;
 /**
  * Function that takes in a super validated form and an oraniser id, to create a game and link it with
  * the location in the form
- * @param form The submitted supervalidated form
- * @param organiserID The users id who created the game
+ * @param form SuperValidated<CreateGameData>
+ * @param organiserID string
  * @returns Promise<Game>
  */
 export async function createGameFromForm(
@@ -56,8 +56,13 @@ export type MapGameData = {
 	currentPlayerNumbers: number;
 };
 
-type GameWithPlayers = Prisma.GameGetPayload<{ include: { players: true } }>;
+export type GameWithPlayers = Prisma.GameGetPayload<{ include: { players: true } }>;
 
+/**
+ * Function that extracts the data from a game and formats it to be used by the map
+ * @param game GameWithPlayers
+ * @returns Promise<MapGameData>
+ */
 export async function buildGameDataForMap(game: GameWithPlayers): Promise<MapGameData> {
 	const address = await getAddressByID(game.locationID);
 	const gameData: MapGameData = {
@@ -73,6 +78,12 @@ export async function buildGameDataForMap(game: GameWithPlayers): Promise<MapGam
 	return gameData;
 }
 
+/**
+ * Function that checks if a previous request was made to 
+ * join the game, if true it throws an error
+ * @param gameID number
+ * @param userID string
+ */
 export async function verifyRequestToJoinIsUnique(gameID: number, userID: string) {
 	const previousRequest = await getRequestToJoin(gameID, userID);
 
@@ -81,6 +92,12 @@ export async function verifyRequestToJoinIsUnique(gameID: number, userID: string
 	}
 }
 
+/**
+ * Function that returns a game that matches the passed ID, if no match is 
+ * found it throws an error
+ * @param gameID number
+ * @returns Promise<GameWithRelatedFields>
+ */
 export async function getGameWithPlayers(gameID: number) {
 	const game = await getGameByID(gameID);
 
@@ -96,6 +113,12 @@ export type GameWithGeoData = GameWithRelatedFields & {
 	geoLocation: GeoJSONPoint;
 };
 
+/**
+ * Function that fills out the location details returned with the data of the games
+ * associated with it
+ * @param databaseResults DatabaseCoordinateResultWithDistance[]
+ * @returns Promise<GameWithGeoData[]>
+ */
 export async function buildClosestGameData(
 	databaseResults: DatabaseCoordinateResultWithDistance[]
 ): Promise<GameWithGeoData[]> {
@@ -103,9 +126,9 @@ export async function buildClosestGameData(
 	const gameIDs = databaseResults.map((result) => result.id);
 
 	if (gameIDs.length > 0) {
-		const mattchedGames = await getGamesWithMatchingIDs(gameIDs);
+		const matchedGames = await getGamesWithMatchingIDs(gameIDs);
 
-		mattchedGames.forEach((game) => {
+		matchedGames.forEach((game) => {
 			let matchedData = databaseResults.find((result) => result.id === game.id);
 			if (matchedData) {
 				const geoLocation = JSON.parse(matchedData.location) as GeoJSONPoint;
@@ -122,6 +145,12 @@ export async function buildClosestGameData(
 	return closestGameData;
 }
 
+/**
+ * Function that that verifies that the the id of the user matches the id of the 
+ * organiser of the game
+ * @param gameID number
+ * @param userID string
+ */
 export async function verifyUserIsOrganiserOfGame(gameID: number, userID: string) {
 	const game = await getGameByID(gameID);
 
