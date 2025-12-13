@@ -42,7 +42,7 @@ describe("getStringFromFormData", () => {
         const formData = new FormData()
         formData.append("name", "Gigi")
 
-        expect(() => getNumberFromFormData(formData, "bad key")).toThrowError("bad key is not in the request data")
+        expect(() => getStringFromFormData(formData, "bad key")).toThrowError("bad key is not in the request data")
 
     })
 

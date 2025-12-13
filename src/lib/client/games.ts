@@ -2,6 +2,11 @@ import type { MapGameData } from '$lib/server/game';
 import { importLibrary } from '@googlemaps/js-api-loader';
 import type { Level, Prisma, Rating } from '@prisma/client';
 
+/**
+ * Function that returns the average of all the ratings
+ * @param ratings Rating[]
+ * @returns number | undefined
+ */
 export function getAverageRating(ratings: Rating[]) {
 	if (ratings.length > 0) {
 		const totalRatings = ratings.reduce((acc, cur) => acc + cur.rating, 0);
@@ -13,6 +18,14 @@ export type RequestWithRelatedFields = Prisma.RequestToJoinGetPayload<{
 	include: { player: { include: { ratings: true } }; game: true };
 }>;
 
+/**
+ * Function that builds the card that shows up when a user clicks on a location on the map,
+ * Returns the html in a string to be parsed
+ * @param gameData MapGameData
+ * @param loggedIn boolean
+ * @param viewGameURL
+ * @returns string
+ */
 export function buildMapCard(gameData: MapGameData, loggedIn: boolean, viewGameURL: string) {
 	return `
             <div class="w-[280px] overflow-hidden rounded-2xl bg-white shadow-2xl font-sans">
@@ -62,6 +75,15 @@ export function buildMapCard(gameData: MapGameData, loggedIn: boolean, viewGameU
             `;
 }
 
+/**
+ * Function that creates markers from the game data
+ * for the map that is passed in
+ * @param currentGameData MapGameData[]
+ * @param map google.maps.Map
+ * @param infoWindow google.maps.InfoWindow
+ * @param loggedIn  boolean
+ * @returns Promise<google.maps.marker.AdvancedMarkerElement[]>
+ */
 export async function createMarkers(
 	currentGameData: MapGameData[],
 	map: google.maps.Map,
@@ -92,18 +114,43 @@ export async function createMarkers(
 		marker.style.overflow = 'hidden !important';
 
 		// show the game details when a marker is clicked
-		marker.addListener('click', () => {
-			const viewGameURL = `/game/view/${gameData.id}`;
-
-			const contentString = buildMapCard(gameData, loggedIn, viewGameURL);
-
-			infoWindow.setContent(contentString);
-			infoWindow.open(map, marker);
-		});
+		addOnClickFunction(marker, gameData, loggedIn, infoWindow, map);
 		return marker;
 	});
 }
 
+/**
+ * Function that adds an event listener to a marker, so that when it 
+ * is clicked it will show the card content
+ * @param marker google.maps.marker.AdvancedMarkerElement
+ * @param gameData MapGameData
+ * @param loggedIn boolean
+ * @param infoWindow google.maps.InfoWindow
+ * @param map google.maps.Map
+ */
+export function addOnClickFunction(
+	marker: google.maps.marker.AdvancedMarkerElement,
+	gameData: MapGameData,
+	loggedIn: boolean,
+	infoWindow: google.maps.InfoWindow,
+	map: google.maps.Map
+) {
+	marker.addListener('click', () => {
+		const viewGameURL = `/game/view/${gameData.id}`;
+
+		const contentString = buildMapCard(gameData, loggedIn, viewGameURL);
+
+		infoWindow.setContent(contentString);
+		infoWindow.open(map, marker);
+	});
+}
+
+/**
+ * Function that returns the colour associated with the 
+ * passed in Level
+ * @param level Level
+ * @returns string
+ */
 export function getLevelColour(level: Level) {
 	switch (level) {
 		case 'BEGINNER':

@@ -24,3 +24,8 @@ vite.config.js.timestamp-*
 vite.config.ts.timestamp-*
 
 /../generated/prisma
+
+
+# coverage
+coverage/
+.vscode/

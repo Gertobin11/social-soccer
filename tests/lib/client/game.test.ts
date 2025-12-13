@@ -1,4 +1,4 @@
-import { buildMapCard, createMarkers, getAverageRating, getLevelColour } from '$lib/client/games';
+import { addOnClickFunction, buildMapCard, createMarkers, getAverageRating, getLevelColour } from '$lib/client/games';
 import type { MapGameData } from '$lib/server/game';
 import type { Rating } from '@prisma/client';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
@@ -171,5 +171,93 @@ describe("getLevelColour", () => {
     it("should return green as a default for unknown levels", () => {
         // @ts-ignore - testing default for edge cases
         expect(getLevelColour('UNKNOWN_LEVEL')).toBe('green');
+    });
+});
+
+describe('addOnClickFunction', () => {
+    let mockMarker: any;
+    let mockInfoWindow: any;
+    let mockMap: any;
+    let mockGameData: MapGameData;
+
+    beforeEach(() => {
+        mockGameData = {
+            id: '123-abc',
+            level: 'INTERMEDITE',
+            day: 'Friday',
+            time: '20:00',
+            currentPlayerNumbers: 4,
+            numberOfPlayers: 10,
+            coordinates: { location: { coordinates: [0, 0] } }
+        } as unknown as MapGameData;
+
+        mockMap = {} as google.maps.Map;
+
+        mockInfoWindow = {
+            setContent: vi.fn(),
+            open: vi.fn()
+        };
+
+        mockMarker = {
+            addListener: vi.fn((event, callback) => {
+                if (event === 'click') {
+                    mockMarker.simulateClick = callback;
+                }
+            }),
+            simulateClick: null 
+        };
+    });
+
+    it('should attach a "click" listener to the marker', () => {
+        addOnClickFunction(
+            mockMarker,
+            mockGameData,
+            true, 
+            mockInfoWindow,
+            mockMap
+        );
+
+        expect(mockMarker.addListener).toHaveBeenCalledWith('click', expect.any(Function));
+    });
+
+    it('should set content and open InfoWindow when clicked (Logged In)', () => {
+        addOnClickFunction(
+            mockMarker,
+            mockGameData,
+            true,
+            mockInfoWindow,
+            mockMap
+        );
+
+        expect(mockMarker.simulateClick).toBeDefined();
+
+        mockMarker.simulateClick();
+
+        expect(mockInfoWindow.setContent).toHaveBeenCalledTimes(1);
+
+        const contentArgs = mockInfoWindow.setContent.mock.calls[0][0];
+        expect(contentArgs).toContain('View Game Details');
+        expect(contentArgs).toContain('/game/view/123-abc');
+        expect(contentArgs).toContain('INTERMEDITE');
+
+        expect(mockInfoWindow.open).toHaveBeenCalledWith(mockMap, mockMarker);
+    });
+
+    it('should set content and open InfoWindow when clicked (Logged Out)', () => {
+        addOnClickFunction(
+            mockMarker,
+            mockGameData,
+            false,
+            mockInfoWindow,
+            mockMap
+        );
+
+        mockMarker.simulateClick();
+
+        const contentArgs = mockInfoWindow.setContent.mock.calls[0][0];
+        expect(contentArgs).toContain('Register To View Details');
+        expect(contentArgs).toContain('/auth/register');
+        
+        expect(mockInfoWindow.open).toHaveBeenCalledWith(mockMap, mockMarker);
     });
 });

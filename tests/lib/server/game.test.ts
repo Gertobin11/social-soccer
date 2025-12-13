@@ -183,6 +183,34 @@ describe('buildClosestGameData', () => {
 			}
 		]);
 	});
+
+	it('should return an empty array if no matches were found', async () => {
+		const getGamesWithMatchingIDsMock = vi.fn().mockResolvedValue([
+			{ id: 1, players: [1, 2, 3] },
+			{ id: 2, players: [1] }
+		]);
+		vi.spyOn(gameORMModule, 'getGamesWithMatchingIDs').mockImplementation(
+			getGamesWithMatchingIDsMock
+		);
+		const databaseResults = [
+			{ id: 11, location: JSON.stringify({ longitude: 100, latitude: 240 }), distance: 24 },
+			{ id: 12, location: JSON.stringify({ longitude: 134, latitude: 111 }), distance: 32 }
+		] as unknown as DatabaseCoordinateResultWithDistance[];
+		const result = await buildClosestGameData(databaseResults);
+
+		expect(result).toStrictEqual([]);
+	});
+
+	it('should return an empty array if the gameswith matching ids returns an empty array', async () => {
+		const getGamesWithMatchingIDsMock = vi.fn().mockResolvedValue([]);
+		vi.spyOn(gameORMModule, 'getGamesWithMatchingIDs').mockImplementation(
+			getGamesWithMatchingIDsMock
+		);
+		const databaseResults = [] as unknown as DatabaseCoordinateResultWithDistance[];
+		const result = await buildClosestGameData(databaseResults);
+
+		expect(result).toStrictEqual([]);
+	});
 });
 
 describe('verifyUserIsOrganiserOfGame', () => {
@@ -211,7 +239,7 @@ describe('verifyUserIsOrganiserOfGame', () => {
 		);
 	});
 
-    it("should throw an error if there is no game with the passed ID", async () => {
+	it('should throw an error if there is no game with the passed ID', async () => {
 		const getGameByIDMock = vi.fn().mockResolvedValue(null);
 
 		vi.spyOn(gameORMModule, 'getGameByID').mockImplementation(getGameByIDMock);

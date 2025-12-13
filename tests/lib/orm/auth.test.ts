@@ -3,14 +3,14 @@ import {
 	deleteAllEmailVerificationTokens,
 	getEmailValidationToken,
 	getSessionByID,
+	invalidateSession,
 	saveEmailVerificationToken,
 	saveSession,
 	updateSession
 } from '$lib/orm/auth';
 import prisma from '$lib/server/prisma';
 import { DateTime } from 'luxon';
-import { beforeEach } from 'node:test';
-import { afterEach, describe, expect, it } from 'vitest';
+import { afterEach, beforeEach, describe, expect, it } from 'vitest';
 import { withUser } from '../../fixtures';
 import { createSession } from '$lib/server/auth';
 import { encodeHexLowerCase } from '@oslojs/encoding';
@@ -140,6 +140,30 @@ describe('getSessionByID', () => {
 		expect(result).toBeNull();
 	});
 });
+
+describe("invalidateSession", () => {
+    beforeEach(async () => {
+		await prisma.user.deleteMany();
+	});
+
+	afterEach(async () => {
+		await prisma.user.deleteMany();
+	});
+    it("should delete the session that matchess the passed ID", async () => {
+        const user = await withUser();
+		const session =await createSession('test token', user.id);
+
+        await invalidateSession(session.token)
+
+        const result  = await prisma.session.findFirst({
+            where: {
+                token: session.token
+            }
+        })
+
+        expect(result).toBeNull()
+    })
+})
 
 describe('saveSession', () => {
 	beforeEach(async () => {
