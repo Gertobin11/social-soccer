@@ -12,16 +12,25 @@ process.env = {
 export default defineConfig({
 	plugins: [tailwindcss(), sveltekit()],
 	test: {
-        include: ['src/**/*.{test}.{js,ts}'],
-        setupFiles: ['./tests/setup.ts'],
+		include: ['src/**/*.{test}.{js,ts}'],
+		setupFiles: ['./tests/setup.ts'],
 		expect: { requireAssertions: true },
+		fileParallelism: false,
+		maxWorkers: 1,
+		coverage: {
+			provider: 'v8',
+			reporter: ['text', 'json', 'html'],
+
+			include: ['src/lib/orm/**/*.ts', 'src/lib/server/**/*.ts', 'src/lib/client/**/*.ts'],
+			exclude: ['src/lib/server/encryption.ts', 'src/lib/server/prisma.ts']
+		},
 		projects: [
-            {
+			{
 				extends: './vite.config.ts',
 				test: {
 					name: 'orm',
 					environment: 'node',
-					include: ['tests/lib/orm/*'],
+					include: ['tests/lib/orm/*']
 				}
 			},
 			{
@@ -29,15 +38,15 @@ export default defineConfig({
 				test: {
 					name: 'server',
 					environment: 'node',
-					include: ['tests/lib/server/*'],
+					include: ['tests/lib/server/*']
 				}
 			},
-            {
+			{
 				extends: './vite.config.ts',
 				test: {
 					name: 'client',
 					environment: 'jsdom',
-					include: ['tests/lib/client/*'],
+					include: ['tests/lib/client/*']
 				}
 			}
 		]

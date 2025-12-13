@@ -1,7 +1,7 @@
 import { encrypt } from '$lib/server/encryption';
 import { getDecryptedUserDetails } from '$lib/server/user';
 import type { User } from '@prisma/client';
-import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
+import {  describe, expect, it} from 'vitest';
 
 describe('getDecryptedUserDetails', () => {
 	it("should return a decrypted user's details", async () => {

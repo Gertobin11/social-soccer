@@ -1,3 +1,9 @@
+/**
+ * Function that transforms a string value of the name in the form into a number
+ * @param formData FormData
+ * @param name string
+ * @returns number
+ */
 export function getNumberFromFormData(formData: FormData, name: string) {
 	const formValue = formData.get(name);
 

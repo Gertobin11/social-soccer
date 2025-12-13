@@ -45,11 +45,11 @@ describe('sendVerificationEmail', () => {
 
 describe('sendPasswordRestEmail', () => {
 	beforeEach(() => {
-		vi.restoreAllMocks();
+		vi.resetAllMocks();
 	});
 
 	afterEach(() => {
-		vi.restoreAllMocks();
+		vi.resetAllMocks();
 	});
 	it('should call send mail on the nodemailer transporter', async () => {
 		await expect(sendPasswordRestEmail('test@mal.com', 'test-url')).resolves.not.toThrowError();

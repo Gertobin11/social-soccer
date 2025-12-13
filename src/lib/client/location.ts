@@ -1,8 +1,8 @@
 /**
  * Function the translates the data returned from reverse geo lookup into 
  * a structure useable in the database schema
- * @param components The address components returned from a Google Geocode reverse look up
- * @returns an object that mirrors the structure of the address schema in the database
+ * @param components AddressComponent[]
+ * @returns StructuredAddress
  */
 export function parseGeocodeAddress(components: AddressComponent[]): StructuredAddress {
 	const tempComponents: { [key: string]: string } = {};

@@ -45,7 +45,7 @@
 		"tailwindcss": "^4.1.13",
 		"typescript": "^5.9.2",
 		"vite": "^7.1.7",
-		"vitest": "^3.2.4",
+		"vitest": "^4.0.15",
 		"zod": "^4.1.12"
 	},
 	"dependencies": {
@@ -54,6 +54,7 @@
 		"@node-rs/argon2": "^2.0.2",
 		"@prisma/client": "^6.16.3",
 		"@types/nodemailer": "^7.0.2",
+		"@vitest/coverage-v8": "^4.0.15",
 		"cryptr": "^6.4.0",
 		"jsdom": "^27.0.1",
 		"luxon": "^3.7.2",
