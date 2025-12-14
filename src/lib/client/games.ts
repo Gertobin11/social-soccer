@@ -151,7 +151,7 @@ export function addOnClickFunction(
  * @param level Level
  * @returns string
  */
-export function getLevelColour(level: Level) {
+export function getLevelColour(level: keyof typeof Level) {
 	switch (level) {
 		case 'BEGINNER':
 			return 'green';

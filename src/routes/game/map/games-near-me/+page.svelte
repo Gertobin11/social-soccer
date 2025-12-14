@@ -1,6 +1,4 @@
 <script lang="ts">
-	import { text } from '@sveltejs/kit';
-	import { config } from 'dotenv';
 	import { page } from '$app/state';
 	import { importLibrary, setOptions } from '@googlemaps/js-api-loader';
 	import { onMount } from 'svelte';
@@ -9,7 +7,6 @@
 	import * as MarkerClusterer from '@googlemaps/markerclusterer';
 	import Icon from '@iconify/svelte';
 	import Title from '$lib/components/ui/Title.svelte';
-	import type { Level } from '@prisma/client';
 	import { getLevelColour } from '$lib/client/games';
 	const flash = getFlash(page);
 
@@ -206,3 +203,6 @@
 		</div>
 	</div>
 </section>
+
+/<!-- to create css classes dynamically rendered -->
+<div class="hidden bg-green-500  bg-red-500  bg-blue-500  bg-orange-500  bg-black"></div>

@@ -10,9 +10,9 @@
 	import { filterGameSchema } from '$lib/validation/game';
 	import { zod4 } from 'sveltekit-superforms/adapters';
 	import { daysOfTheWeek } from '$lib/client/utils';
-	import { Level } from '@prisma/client';
-	import { buildMapCard, createMarkers } from '$lib/client/games';
+	import { createMarkers  } from '$lib/client/games';
 	import Title from '$lib/components/ui/Title.svelte';
+	import { Level } from '$lib/client/prismaEnumTranslation';
 	const flash = getFlash(page);
 
 	let { data }: PageProps = $props();

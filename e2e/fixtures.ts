@@ -1,5 +1,5 @@
 import dotenv from 'dotenv';
-import { Prisma, PrismaClient } from '@prisma/client';
+import { Level, Prisma, PrismaClient } from '@prisma/client';
 import { hash } from '@node-rs/argon2';
 
 export async function createCoordinates(longitude: number, latitude: number): Promise<number> {
@@ -62,10 +62,25 @@ export const withBasicUser = async (page: any) => {
 	});
 };
 
+export async function  withAdditionalUser() {
+    const hashedPassword = await hash("fake password");
+
+	return await prisma.user.create({
+		data: {
+			id: 'fake random string 2',
+			email: "test@test.com",
+			emailVerified: true,
+			passwordHash: hashedPassword
+		}
+	});
+}
+
 const locations = [
 	{
 		latitude: 52.2713,
 		longitude: -9.7026,
+        day: 'Monday',
+        level: Level.BEGINNER,
 		lineOne: 'No. 1',
 		lineTwo: 'Main Street',
 		city: 'Tralee',
@@ -76,6 +91,8 @@ const locations = [
 	{
 		latitude: 52.0599,
 		longitude: -9.5044,
+        day: 'Tuesday',
+        level: Level.RECREATIONAL,
 		lineOne: 'No. 2',
 		lineTwo: 'Main Street',
 		city: 'Killarney',
@@ -86,6 +103,8 @@ const locations = [
 	{
 		latitude: 52.1409,
 		longitude: -10.2703,
+        day: 'Wednesday',
+        level: Level.COMPETITIVE,
 		lineOne: 'No. 3',
 		lineTwo: 'Main Street',
 		city: 'Dingle',
@@ -96,6 +115,8 @@ const locations = [
 	{
 		latitude: 51.9995,
 		longitude: -9.7427,
+        day: 'Thursday',
+        level: Level.INTERMEDITE,
 		lineOne: 'No. 4',
 		lineTwo: 'Main Street',
 		city: 'Killarney',
@@ -106,6 +127,8 @@ const locations = [
 	{
 		latitude: 52.4474,
 		longitude: -9.4855,
+        day: 'Friday',
+        level: Level.COMPETITIVE,
 		lineOne: 'No. 5',
 		lineTwo: 'Main Street',
 		city: 'Listowel',
@@ -137,13 +160,21 @@ export async function withGames() {
 		await prisma.game.create({
 			data: {
 				locationID: address.id,
-				level: 'BEGINNER',
+				level: location.level,
 				numberOfPlayers: 10,
 				active: true,
 				organiserID: user.id,
 				time: '20:00',
-				day: 'Monday'
+				day: location.day
 			}
 		});
 	}
+}
+
+export async function withRequest(gameID: number, playerID: string) {
+    return await prisma.requestToJoin.create({
+        data: {
+            gameID, playerID
+        }
+    })
 }

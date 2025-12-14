@@ -2,13 +2,13 @@
 	import { superForm } from 'sveltekit-superforms/client';
 	import type { PageProps } from './$types';
 	import { daysOfTheWeek } from '$lib/client/utils';
-	import { Level } from '@prisma/client';
 	import { setOptions, importLibrary } from '@googlemaps/js-api-loader';
 	import { onMount } from 'svelte';
 	import { getFlash } from 'sveltekit-flash-message';
 	import { page } from '$app/state';
 	import { parseGeocodeAddress } from '$lib/client/location';
 	import Title from '$lib/components/ui/Title.svelte';
+	import { Level } from '$lib/client/prismaEnumTranslation';
 	const flash = getFlash(page);
 
 	let { data }: PageProps = $props();

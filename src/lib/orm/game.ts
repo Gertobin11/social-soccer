@@ -124,7 +124,7 @@ export async function addPlayerToGame(gameID: number, userID: string) {
 				}
 			}
 		},
-        include: gameRelatedFields
+		include: gameRelatedFields
 	});
 }
 
@@ -154,7 +154,7 @@ export async function getOpenGameRequestForAdmin(organiserID: string) {
 				organiserID
 			}
 		},
-		include: { game: { include: gameRelatedFields } }
+		include: { game: { include: gameRelatedFields }, player: { include: { ratings: true } } }
 	});
 }
 
@@ -174,7 +174,7 @@ export async function getManagedGames(organiserID: string) {
 
 /**
  * Function that returns all the games where the player with the passed ID is participating in
- * @param playerID the id of the player 
+ * @param playerID the id of the player
  * @returns Promise<GameWithRelatedFields[]>
  */
 export async function getGamesParticipatingIn(playerID: string) {
@@ -188,7 +188,7 @@ export async function getGamesParticipatingIn(playerID: string) {
 			}
 		},
 		include: gameRelatedFields,
-        orderBy: {id: "asc"}
+		orderBy: { id: 'asc' }
 	});
 }
 
@@ -206,7 +206,7 @@ export type GameWithRelatedFields = Prisma.GameGetPayload<{
 }>;
 
 /**
- * Should return a game if its ID is in the Array 
+ * Should return a game if its ID is in the Array
  * @param gameIDs an array of ids from game.s
  * @returns Promise<GameWithRelatedFields[]
  */
@@ -256,7 +256,7 @@ export async function updateRequestToJoin(requestID: number, accepted: boolean) 
 
 /**
  * Function tht deletes a request to join a game
- * @param gameID the ID of the game that the request is to 
+ * @param gameID the ID of the game that the request is to
  * @param playerID the ID of the player that the request is from
  */
 export async function deleteRequestToJoin(gameID: number, playerID: string) {
@@ -272,7 +272,7 @@ export async function deleteRequestToJoin(gameID: number, playerID: string) {
 
 /**
  * Function that returns every requestToJoin that has nott set a value on accepted
- * @param gameID the ID of the game 
+ * @param gameID the ID of the game
  * @returns Promise<RequestToJoin[]>
  */
 export async function getOpenRequestsForGame(gameID: number) {

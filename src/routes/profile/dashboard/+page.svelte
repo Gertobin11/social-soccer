@@ -5,6 +5,7 @@
 	import { getFlash } from 'sveltekit-flash-message';
 	import { page } from '$app/stores';
 	import { getErrorMessage } from '$lib/client/utils';
+	import Title from '$lib/components/ui/Title.svelte';
 	const flash = getFlash(page);
 
 	let { data }: PageProps = $props();
@@ -37,8 +38,10 @@
 </script>
 
 <section class="grid h-full w-full grid-cols-3 gap-12 md:p-32">
+	<div class="col-span-3 flex w-full items-center justify-center">
+		<Title title="Dashboard"></Title>
+	</div>
 
-    
 	<!-- Show requests first as it is the most urgent information -->
 	{#if openRequests && openRequests.length > 0}
 		<div class="col-span-3 flex flex-col rounded border-2 border-gray-200 bg-white p-8 shadow-2xl">
@@ -67,7 +70,7 @@
 						{request.player.email}
 					</p>
 					<p class="col-span-2 text-center text-lg font-semibold text-black">
-						{request.player.ratings.length > 0
+						{request.player.ratings && request.player.ratings.length > 0
 							? getAverageRating(request.player.ratings)
 							: 'Not Rated'}
 					</p>
