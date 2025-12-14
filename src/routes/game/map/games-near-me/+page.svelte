@@ -8,6 +8,7 @@
 	import Icon from '@iconify/svelte';
 	import Title from '$lib/components/ui/Title.svelte';
 	import { getLevelColour } from '$lib/client/games';
+	import MetaTags from '$lib/components/functional/MetaTags.svelte';
 	const flash = getFlash(page);
 
 	let { data }: PageProps = $props();
@@ -138,6 +139,11 @@
 		}
 	});
 </script>
+
+<MetaTags
+	description="Using your address, see active football matches near you"
+	title="Social Soccer | View Games Near Me"
+/>
 
 <!-- a 2 panel layout for large screens and single column for mobiles -->
 <section class="grid min-h-[calc(100vh-4rem)] grid-cols-1 md:grid-cols-3">

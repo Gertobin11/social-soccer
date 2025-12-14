@@ -7,6 +7,7 @@
 	import { page } from '$app/state';
 	import Icon from '@iconify/svelte';
 	import type { UserWithRatings } from '$lib/orm/user';
+	import MetaTags from '$lib/components/functional/MetaTags.svelte';
 	const flash = getFlash(page);
 
 	let { data }: PageProps = $props();
@@ -24,6 +25,11 @@
 		return rating;
 	}
 </script>
+
+<MetaTags
+	description="Manage your football match, accept requests, update times and location"
+	title="Social Soccer | Manage Game"
+/>
 
 <section class="grid h-full w-full grid-cols-3 gap-12 md:p-32">
 	<div class="col-span-3 flex flex-col items-center">

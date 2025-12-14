@@ -3,6 +3,7 @@
 	import { page } from '$app/state';
 	import type { PageProps } from './$types';
 	import { superForm } from 'sveltekit-superforms';
+	import MetaTags from '$lib/components/functional/MetaTags.svelte';
 	const flash = getFlash(page);
 
 	let { data }: PageProps = $props();
@@ -10,7 +11,13 @@
 	const { form, errors, enhance, constraints, message } = superForm(data.profileForm, {
 		resetForm: false
 	});
+
 </script>
+
+<MetaTags
+	description="Update the first name and last name of your profile."
+	title="Social Soccer | Update Profile"
+/>
 
 <div class="flex items-center justify-center min-h-[90vh]">
 	<div class="bg-white h-min p-8 shadow-xl md:max-w-[450px]">

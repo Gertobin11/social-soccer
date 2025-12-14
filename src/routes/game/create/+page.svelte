@@ -9,6 +9,7 @@
 	import { parseGeocodeAddress } from '$lib/client/location';
 	import Title from '$lib/components/ui/Title.svelte';
 	import { Level } from '$lib/client/prismaEnumTranslation';
+	import MetaTags from '$lib/components/functional/MetaTags.svelte';
 	const flash = getFlash(page);
 
 	let { data }: PageProps = $props();
@@ -110,6 +111,11 @@
 	});
 </script>
 
+<MetaTags
+	description="Create a game of football, advertise it on our map"
+	title="Social Soccer | Create a Game"
+/>
+
 <!-- a 2 panel layout for large screens and single column for mobiles -->
 <section class="grid min-h-[calc(100vh-4rem)] grid-cols-1 md:grid-cols-2">
 	<!-- Map section for picking the address-->
@@ -122,14 +128,14 @@
 		<div class="col-span-1 flex flex-col items-center md:col-span-3">
 			<Title title="Create a Game"></Title>
 		</div>
-		<div class="bg-white p-8 shadow-xl md:max-w-[450px] w-full flex flex-col items-center">
+		<div class="flex w-full flex-col items-center bg-white p-8 shadow-xl md:max-w-[450px]">
 			{#if !addressComplete}
 				<h2 class="py-3 text-2xl text-gray-500">Address Details</h2>
 				<form
 					method="POST"
 					action="?/createAddress"
 					use:addressEnhance
-					class="flex max-w-80 flex-col gap-3 w-full"
+					class="flex w-full max-w-80 flex-col gap-3"
 				>
 					{#if $addressMessage}<h3>{$addressMessage}</h3>{/if}
 					<!-- Address Line 1-->
@@ -243,7 +249,12 @@
 				</form>
 			{:else}
 				<h2 class="py-3 text-2xl text-gray-500">Game Details</h2>
-				<form method="POST" action="?/createGame" use:enhance class="flex max-w-80 flex-col gap-3 w-full">
+				<form
+					method="POST"
+					action="?/createGame"
+					use:enhance
+					class="flex w-full max-w-80 flex-col gap-3"
+				>
 					{#if $message}<h3>{$message}</h3>{/if}
 
 					<!-- Day -->

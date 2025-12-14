@@ -13,6 +13,7 @@
 	import { createMarkers  } from '$lib/client/games';
 	import Title from '$lib/components/ui/Title.svelte';
 	import { Level } from '$lib/client/prismaEnumTranslation';
+	import MetaTags from '$lib/components/functional/MetaTags.svelte';
 	const flash = getFlash(page);
 
 	let { data }: PageProps = $props();
@@ -98,6 +99,11 @@
 		}
 	});
 </script>
+
+<MetaTags
+	description="Use our interactive map to see the location of games"
+	title="Social Soccer | View Games"
+/>
 
 <!-- a 2 panel layout for large screens and single column for mobiles -->
 <section class="grid min-h-[calc(100vh-4rem)] grid-cols-1 md:grid-cols-3">

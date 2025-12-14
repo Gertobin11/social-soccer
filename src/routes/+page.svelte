@@ -2,6 +2,7 @@
 	import { goto } from '$app/navigation';
 	import Icon from '@iconify/svelte';
 	import type { PageProps } from './$types';
+	import MetaTags from '$lib/components/functional/MetaTags.svelte';
 
 	let { data }: PageProps = $props();
 
@@ -12,6 +13,8 @@
 		await goto('/game/map');
 	}
 </script>
+
+<MetaTags />
 
 <!-- Hero Section -->
 <section class="pt-32 pb-20 lg:pt-48 lg:pb-32">

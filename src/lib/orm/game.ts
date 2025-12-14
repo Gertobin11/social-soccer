@@ -281,6 +281,6 @@ export async function getOpenRequestsForGame(gameID: number) {
 			gameID: gameID,
 			accepted: null
 		},
-		include: { game: { include: gameRelatedFields } }
+		include: { game: { include: gameRelatedFields }, player: {include: {ratings: true}} }
 	});
 }

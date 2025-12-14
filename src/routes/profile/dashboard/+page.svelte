@@ -6,6 +6,7 @@
 	import { page } from '$app/stores';
 	import { getErrorMessage } from '$lib/client/utils';
 	import Title from '$lib/components/ui/Title.svelte';
+	import MetaTags from '$lib/components/functional/MetaTags.svelte';
 	const flash = getFlash(page);
 
 	let { data }: PageProps = $props();
@@ -36,6 +37,11 @@
 		}
 	}
 </script>
+
+<MetaTags
+	description="View details of your profile and games where they are participating in and organising."
+	title="Social Soccer | Dashboard"
+/>
 
 <section class="grid h-full w-full grid-cols-3 gap-12 md:p-32">
 	<div class="col-span-3 flex w-full items-center justify-center">

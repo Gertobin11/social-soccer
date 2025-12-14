@@ -4,6 +4,7 @@
 	import Icon from '@iconify/svelte';
 	import type { PageProps } from './$types';
 	import { getLevelColour } from '$lib/client/games';
+	import MetaTags from '$lib/components/functional/MetaTags.svelte';
 	let { data }: PageProps = $props();
 
 	let mapElement: HTMLDivElement;
@@ -35,6 +36,11 @@
 		});
 	});
 </script>
+
+<MetaTags
+	description="View details about the football game."
+	title="Social Soccer | Game Details"
+/>
 
 <!-- A single card, displaying the game details -->
 <section class="flex min-h-[calc(100vh-4rem)] items-center justify-center">

@@ -5,6 +5,7 @@
 	import { setError, setMessage, superForm } from 'sveltekit-superforms/client';
 	import SlidingImage from '$lib/components/ui/SlidingImage.svelte';
 	import Title from '$lib/components/ui/Title.svelte';
+	import MetaTags from '$lib/components/functional/MetaTags.svelte';
 
 	let { data }: PageProps = $props();
 
@@ -20,6 +21,11 @@
 		}
 	});
 </script>
+
+<MetaTags
+	description="Update your password on the Social Soccer Platform."
+	title="Social Soccer | Update Password"
+/>
 
 <!-- a 2 panel layout for large screens and single column for mobiles -->
 <section class="grid grid-cols-1 md:grid-cols-2 h-[calc(100vh-4rem)]">
