@@ -20,7 +20,7 @@
 </script>
 
 <div class="relative w-full overflow-hidden md:h-full">
-	<img src={imageSrc} alt="wedding themed page banner" class="h-full w-full object-cover" />
+	<img src={imageSrc} alt="wedding themed page banner" fetchpriority="high" class="h-full w-full object-cover" />
 
 	<div
 		class="absolute top-0 left-0 h-full w-full bg-surface-50 transition-transform duration-700 ease-in-out"

@@ -169,7 +169,7 @@
 			</div>
 		{:else}
 			<div class="flex flex-col items-center justify-center gap-2 py-10">
-				<p class="text-lg font-bold text-gray-400">You haven't created any games yet.</p>
+				<p class="text-lg font-bold text-gray-500">You haven't created any games yet.</p>
 				<a href="/game/create" class="button-reg btn">Create Game</a>
 			</div>
 		{/if}
@@ -249,7 +249,7 @@
 			</div>
 		{:else}
 			<div class="flex flex-col items-center justify-center gap-2 py-10">
-				<p class="text-lg font-bold text-gray-400">You haven't joined any games.</p>
+				<p class="text-lg font-bold text-gray-500">You haven't joined any games.</p>
 				<a href="/game/map" class="preset-filled-primary-50btn button-reg btn">Browse Games</a>
 			</div>
 		{/if}

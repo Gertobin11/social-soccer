@@ -27,7 +27,7 @@
 	contentBase="card bg-surface-50 p-4 space-y-4 shadow-xl max-w-screen-sm"
 	backdropClasses="backdrop-blur-sm"
 >
-	{#snippet trigger()}<Icon icon="material-symbols:logout-rounded" width="24" height="24" />{/snippet}
+	{#snippet trigger()}<button aria-label="logout button"><Icon icon="material-symbols:logout-rounded" width="28" height="28" /></button>{/snippet}
 	{#snippet content()}
 		<header class="flex justify-between">
 			<h2 class="h2">Confirm Logout</h2>
