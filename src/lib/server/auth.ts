@@ -28,8 +28,8 @@ export function generateToken() {
 
 /**
  * Function that creates a record of a session in the database and saves it as lowercase hexidecimal translation
- * @param token a string token representing the session
- * @param userID the ID of the user who the session is being linked to 
+ * @param token string
+ * @param userID string
  * @returns Promise<Session>
  */
 export async function createSession(token: string, userID: string) {
@@ -43,7 +43,7 @@ export async function createSession(token: string, userID: string) {
 /**
  * Function that checks if a session token is valid, if it falls in the renewal date, the
  * session expiry date gets extended
- * @param token the string token to be validated
+ * @param token string
  * @returns Promise<{session: Session, user: User}>
  */
 export async function validateSessionToken(token: string) {
@@ -75,9 +75,9 @@ export type SessionValidationResult = Awaited<ReturnType<typeof validateSessionT
 
 /**
  * Function that sets the session cookie
- * @param event the request event
- * @param token the string token to set as the cookie value
- * @param expiresAt the exiration date of the cookie
+ * @param event RequestEvent
+ * @param token string
+ * @param expiresAt Date
  */
 export function setSessionTokenCookie(event: RequestEvent, token: string, expiresAt: Date) {
 	event.cookies.set(sessionCookieName, token, { expires: expiresAt, path: '/' });
@@ -85,7 +85,7 @@ export function setSessionTokenCookie(event: RequestEvent, token: string, expire
 
 /**
  * Function that deletes the session cookie
- * @param event the request event
+ * @param event RequestEvent
  */
 export function deleteSessionTokenCookie(event: RequestEvent) {
 	event.cookies.delete(sessionCookieName, { path: '/' });
@@ -105,7 +105,7 @@ export function generateUserId() {
 /**
  * Function that deletes all previous email verification tokens
  * and creates a new token
- * @param userID The ID of the user who the email verification token is being created for
+ * @param userID string
  * @returns Promise<string>
  */
 export async function createEmailVerificationToken(userID: string): Promise<string> {
@@ -121,7 +121,7 @@ export async function createEmailVerificationToken(userID: string): Promise<stri
 
 /**
  * Function that checks if the email verification token exists and it has not expired
- * @param token the token value of the email verification object
+ * @param token string
  * @returns Promise<string>
  */
 export const validateEmailVerificationToken = async (token: string) => {
@@ -139,7 +139,7 @@ export const validateEmailVerificationToken = async (token: string) => {
 
 /**
  * Function that creates a password reset token 
- * @param userID The ID of the user that the token is linked to
+ * @param userID string
  * @returns Promise<string>
  */
 export async function generatePasswordResetToken(userID: string) {

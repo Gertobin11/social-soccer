@@ -2,9 +2,9 @@ import prisma from '../server/prisma';
 
 /**
  * Function that creates a token for a user to rest their password
- * @param userID the user id that owns the password reset token
- * @param token the token string
- * @param expires the Date when the token is no longer valid
+ * @param userID number
+ * @param token tring
+ * @param expires Date
  */
 export async function createPasswordResetToken(userID: string, token: string, expires: Date) {
 	return await prisma.passwordResetToken.create({
@@ -18,7 +18,7 @@ export async function createPasswordResetToken(userID: string, token: string, ex
 /**
  * Function thate gets and returns the email verification token, and also 
  * deletes any current sessions attached to the user and the email verification token itself
- * @param token the email verificationToken
+ * @param token string
  * @returns Promise<EmailVerification>
  */
 export async function getEmailValidationToken(token: string) {
@@ -44,9 +44,9 @@ export async function getEmailValidationToken(token: string) {
 
 /**
  * Function that saves the email verification object
- * @param token the string value of the token
- * @param userID te id of the User
- * @param expires the date of when the token expires in milliseconds
+ * @param token string
+ * @param userID string
+ * @param expires number
  * @returns Promise<EmailVerification>
  */
 export async function saveEmailVerificationToken(token: string, userID: string, expires: number) {
@@ -61,7 +61,7 @@ export async function saveEmailVerificationToken(token: string, userID: string, 
 
 /**
  * Function that deletes the record of the session 
- * @param sessionId the id of the session to delete
+ * @param sessionId string
  */
 export async function invalidateSession(sessionId: string) {
 	await prisma.session.delete({
@@ -73,8 +73,8 @@ export async function invalidateSession(sessionId: string) {
 
 /**
  * Function that updates a session token with a new expiration date
- * @param token the string token 
- * @param newExpiration the new expiration date
+ * @param token string
+ * @param newExpiration Date
  * @returns Promise<Session>
  */
 export async function updateSession(token: string, newExpiration: Date) {
@@ -90,7 +90,7 @@ export async function updateSession(token: string, newExpiration: Date) {
 
 /**
  * Function that returns the Session of the matching id
- * @param sessionID the id of the session
+ * @param sessionID string
  * @returns Promise<Session>
  */
 export async function getSessionByID(sessionID: string) {
@@ -106,9 +106,9 @@ export async function getSessionByID(sessionID: string) {
 
 /**
  * Function that saves a session 
- * @param sessionID the session ID to be stored
- * @param userID the id of the User to link the session 
- * @param expiresAt the Date of when the session is not active
+ * @param sessionID string
+ * @param userID string
+ * @param expiresAt Date
  * @returns Promise<Session>
  */
 export async function saveSession(sessionID: string, userID: string, expiresAt: Date) {
@@ -123,7 +123,7 @@ export async function saveSession(sessionID: string, userID: string, expiresAt: 
 
 /**
  * Function that deletes all the linked email verification tokens
- * @param userID the id of the user who's emailVerification tokens are to be deleted
+ * @param userID string
  */
 export async function deleteAllEmailVerificationTokens(userID: string) {
 	await prisma.emailVerification.deleteMany({ where: { userID } });

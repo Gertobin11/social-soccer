@@ -109,7 +109,7 @@
 <section class="grid min-h-[calc(100vh-4rem)] grid-cols-1 md:grid-cols-3">
 	<!-- Map section for picking the address-->
 	<div class="col-span-2 h-full">
-		<div class="h-full w-full" bind:this={mapElement}></div>
+		<div class="h-full w-full min-h-[calc(100vh-8rem)]" bind:this={mapElement}></div>
 	</div>
 
 	<!-- legend -->

@@ -4,9 +4,9 @@ import prisma from '../server/prisma';
 
 /**
  * Fuction that updates the User with a first and second name
- * @param userID the id of the user
- * @param firstName their first Name
- * @param lastName their last name
+ * @param userID string
+ * @param firstName string
+ * @param lastName string
  */
 export async function addNamesToUser(userID: string, firstName: string, lastName: string) {
 	await prisma.user.update({
@@ -22,9 +22,9 @@ export async function addNamesToUser(userID: string, firstName: string, lastName
 
 /**
  * Function that creates a user in the database
- * @param userID the id the user will have
- * @param email the users email - unique
- * @param passwordHash the hashed password of the user
+ * @param userID string
+ * @param email string
+ * @param passwordHash string
  * @returns Promise<User>
  */
 export async function createUser(userID: string, email: string, passwordHash: string) {
@@ -41,7 +41,7 @@ export async function createUser(userID: string, email: string, passwordHash: st
 
 /**
  * function that looks up a user object by its id
- * @param id the id of the user
+ * @param id string
  * @returns Promise<User | null>
  */
 export async function getUserByID(id: string) {
@@ -62,7 +62,7 @@ export async function getUserByID(id: string) {
 
 /**
  * Function that looks up a user by eail and returns the User or null
- * @param email the email of the user
+ * @param email string
  * @returns Promise<User | null>
  */
 export async function getUserByEmail(email: string) {
@@ -75,8 +75,8 @@ export async function getUserByEmail(email: string) {
 
 /**
  * Function that links a user to an address
- * @param userID the users ID
- * @param addressID the address' ID
+ * @param userID string
+ * @param addressID number
  * @returns Promise<User>
  */
 export async function addAddressToUser(userID: string, addressID: number) {
@@ -94,9 +94,9 @@ export type UserWithRatings = Prisma.UserGetPayload<{ include: { ratings: true }
 
 /**
  * Function that creates a rating for a player in the passes game
- * @param userID the ID of the user to rate
- * @param gameID the game which the user is rated from
- * @param rating the rating of the user
+ * @param userID string
+ * @param gameID number
+ * @param rating number
  * @returns Promise<Rating>
  */
 export async function createRating(userID: string, gameID: number, rating: number) {
@@ -125,8 +125,8 @@ export async function updateRating(userID: string, gameID: number, rating: numbe
 
 /**
  * Function that queries the database for a rating that matches the user and payer ID's
- * @param userID the id of the user who has the rating
- * @param gameID the game id in which the user was rated
+ * @param userID string
+ * @param gameID number
  * @returns Promise<Rating | null>
  */
 export async function getRating(userID: string, gameID: number) {

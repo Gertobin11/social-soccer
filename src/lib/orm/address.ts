@@ -5,8 +5,8 @@ import { encrypt } from '$lib/server/encryption';
 /**
  * Create a new coordinates object in the database using a raw query
  * as currently postgids is not supported in prisma
- * @param longitude the longitude of the coordinate
- * @param latitude the latitude of the coordinates
+ * @param longitude number
+ * @param latitude number
  * @returns number
  */
 export async function createCoordinates(longitude: number, latitude: number): Promise<number> {
@@ -30,7 +30,7 @@ export async function createCoordinates(longitude: number, latitude: number): Pr
 /**
  *
  * Function that gets a coordinate by its ID
- * @param id the id of the coordinates
+ * @param id number
  * @returns Coordinates
  */
 export async function getCoordinateByID(id: number): Promise<CoordinateWithGeoJSON> {
@@ -61,9 +61,9 @@ export async function getCoordinateByID(id: number): Promise<CoordinateWithGeoJS
 /**
  * Function that looks up the closest games coordinates based off the passed
  * in longitude and latitude
- * @param longitude the longitude of the point where the distance is calculated from
- * @param latitude the latitude of the point where the distance is calculated from
- * @param amount the number of records retrieved
+ * @param longitude number
+ * @param latitude number
+ * @param amount number
  * @returns DatabaseCoordinateResultWithDistance[]
  */
 export async function findNearestGames(longitude: number, latitude: number, amount: number) {
@@ -98,8 +98,8 @@ export async function findNearestGames(longitude: number, latitude: number, amou
 /**
  * Function that uses prisma to create an address
  * @param data AddressData
- * @param coordinatesID id on a coordinates object to link to the addres
- * @returns Address
+ * @param coordinatesID number
+ * @returns Promise<Address>
  */
 export async function createAddress(data: AddressFields, coordinatesID: any) {
 	return await prisma.address.create({
@@ -117,7 +117,7 @@ export async function createAddress(data: AddressFields, coordinatesID: any) {
 
 /**
  * Function that returns the address of the id passed, or throws an error if it is not found
- * @param id the id of the address
+ * @param id number
  * @returns Address
  */
 export async function getAddressByID(id: number) {
@@ -132,8 +132,8 @@ export async function getAddressByID(id: number) {
 
 /**
  * Function that uses prisma to update an address in the database
- * @param data The fields in the address form
- * @param coordinatesID the id from the coordinates to link with the address
+ * @param data AddressFields
+ * @param coordinatesID number
  * @returns Address
  */
 export async function updateAddress(data: AddressFields, coordinatesID: number) {
@@ -153,7 +153,7 @@ export async function updateAddress(data: AddressFields, coordinatesID: number) 
 
 /**
  * Function that returns a matching address object or null if a match is not found
- * @param id The id of the address requested
+ * @param id number
  * @returns Promise<Address | null>
  */
 export async function getAddress(id: number) {
@@ -162,7 +162,7 @@ export async function getAddress(id: number) {
 
 /**
  * Function that deletes the correspnding Soordinates object
- * @param id The id of the Coordinates
+ * @param id number
  */
 export async function deleteCoordinatesByID(id: number) {
 	await prisma.coordinates.delete({ where: { id } });

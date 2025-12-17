@@ -14,13 +14,13 @@ const gameRelatedFields = {
 
 /**
  * Function that creates a record of a game in the database
- * @param day the day the game is on i.e. "Monday"
- * @param active boolean to indicate if the game is currently active
- * @param time the time the game is on .e. "19.00"
- * @param numberOfPlayers the number of players required to play the game
- * @param organiserID the id of the User who organises the game
- * @param level the level at which the game is palyed at i.e. "BEGINNER" or "ADVANCED"
- * @param addressID the id of the location of the game
+ * @param day string
+ * @param active boolean
+ * @param time string
+ * @param numberOfPlayers number
+ * @param organiserID string
+ * @param level Level
+ * @param addressID number
  * @returns Promise<GameWithRelatedFields>
  */
 
@@ -50,7 +50,7 @@ export async function createGame(
 
 /**
  * Function that returns the matching Game with the corresponding ID or null
- * @param gameID the id of the game requested
+ * @param gameID number
  * @returns Promise<GameWithRelatedFields>
  */
 export async function getGameByID(gameID: number) {
@@ -65,8 +65,8 @@ export async function getGameByID(gameID: number) {
 /**
  * Function that takes in a gameID and userID and uses this unique combination
  * to return a matching RequestToJoin record or null
- * @param gameID the id of the game
- * @param userID the id of the user
+ * @param gameID number
+ * @param userID string
  * @returns Promise<RequestToJoin | null>
  */
 export async function getRequestToJoin(gameID: number, userID: string) {
@@ -80,7 +80,7 @@ export async function getRequestToJoin(gameID: number, userID: string) {
 
 /**
  * Function that queries the database for a RequestToJoin Record , using the id
- * @param id the id of the request
+ * @param id number
  *  @returns Promise<RequestToJoin | null>
  */
 export async function getRequestToJoinByID(id: number) {
@@ -93,8 +93,8 @@ export async function getRequestToJoinByID(id: number) {
 
 /**
  * Function that creates a record of a request to join a game in the database
- * @param gameID the id of the game that the request is for
- * @param userID the id of the user making the request
+ * @param gameID number
+ * @param userID string
  * @returns Promise<RequestToJoin>
  */
 export async function createRequestToJoin(gameID: number, userID: string) {
@@ -108,8 +108,8 @@ export async function createRequestToJoin(gameID: number, userID: string) {
 
 /**
  * Function that adds a player to the games players
- * @param gameID the ID of the game that the payer is being added to
- * @param userID the ID of the user being added to the game
+ * @param gameID number
+ * @param userID string
  * @returns Promise<Game>
  */
 export async function addPlayerToGame(gameID: number, userID: string) {
@@ -130,7 +130,7 @@ export async function addPlayerToGame(gameID: number, userID: string) {
 
 /**
  * Function that returns the latest games created
- * @param limit the number of games to be returned
+ * @param limit number
  * @returns Promise<GameWithRelatedFields[]>
  */
 export async function getLatestGames(limit: number) {
@@ -143,7 +143,7 @@ export async function getLatestGames(limit: number) {
 
 /**
  * Function that returns all the request to join games that belong to the organiser that matches the passed ID
- * @param organiserID the ID of the organiser
+ * @param organiserID string
  * @returns Promise<RequestToJoin[]>
  */
 export async function getOpenGameRequestForAdmin(organiserID: string) {
@@ -160,7 +160,7 @@ export async function getOpenGameRequestForAdmin(organiserID: string) {
 
 /**
  * Function that returns all the games that the passed id is the organiser of
- * @param organiserID the id of the organiser who manages the games
+ * @param organiserID string
  * @returns Promise<GameWithRelatedFields[]>
  */
 export async function getManagedGames(organiserID: string) {
@@ -174,7 +174,7 @@ export async function getManagedGames(organiserID: string) {
 
 /**
  * Function that returns all the games where the player with the passed ID is participating in
- * @param playerID the id of the player
+ * @param playerID string
  * @returns Promise<GameWithRelatedFields[]>
  */
 export async function getGamesParticipatingIn(playerID: string) {
@@ -207,7 +207,7 @@ export type GameWithRelatedFields = Prisma.GameGetPayload<{
 
 /**
  * Should return a game if its ID is in the Array
- * @param gameIDs an array of ids from game.s
+ * @param gameIDs number[]
  * @returns Promise<GameWithRelatedFields[]
  */
 export async function getGamesWithMatchingIDs(gameIDs: number[]): Promise<GameWithRelatedFields[]> {
@@ -221,8 +221,8 @@ export async function getGamesWithMatchingIDs(gameIDs: number[]): Promise<GameWi
 
 /**
  * Function that removes a user from a game
- * @param gameID the ID of the game that the player is to be removed from
- * @param userID the id of the user to be removed from the game
+ * @param gameID number
+ * @param userID string
  */
 export async function removePlayerFromGame(gameID: number, userID: string) {
 	await prisma.game.update({
@@ -241,8 +241,8 @@ export async function removePlayerFromGame(gameID: number, userID: string) {
 
 /**
  * Function that sets the status of whether the request to join has been acccepted or not
- * @param requestID the id of the request to be updated
- * @param accepted the status to be set on the request
+ * @param requestID number
+ * @param accepted boolean
  * @returns Promise<RequestToJoin>
  */
 export async function updateRequestToJoin(requestID: number, accepted: boolean) {
@@ -256,8 +256,8 @@ export async function updateRequestToJoin(requestID: number, accepted: boolean) 
 
 /**
  * Function tht deletes a request to join a game
- * @param gameID the ID of the game that the request is to
- * @param playerID the ID of the player that the request is from
+ * @param gameID number
+ * @param playerID string
  */
 export async function deleteRequestToJoin(gameID: number, playerID: string) {
 	await prisma.requestToJoin.delete({
@@ -272,7 +272,7 @@ export async function deleteRequestToJoin(gameID: number, playerID: string) {
 
 /**
  * Function that returns every requestToJoin that has nott set a value on accepted
- * @param gameID the ID of the game
+ * @param gameID number
  * @returns Promise<RequestToJoin[]>
  */
 export async function getOpenRequestsForGame(gameID: number) {
@@ -281,6 +281,6 @@ export async function getOpenRequestsForGame(gameID: number) {
 			gameID: gameID,
 			accepted: null
 		},
-		include: { game: { include: gameRelatedFields }, player: {include: {ratings: true}} }
+		include: { game: { include: gameRelatedFields }, player: { include: { ratings: true } } }
 	});
 }

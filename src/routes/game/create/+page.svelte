@@ -119,8 +119,8 @@
 <!-- a 2 panel layout for large screens and single column for mobiles -->
 <section class="grid min-h-[calc(100vh-4rem)] grid-cols-1 md:grid-cols-2">
 	<!-- Map section for picking the address-->
-	<div class="h-full">
-		<div class="h-full w-full" bind:this={mapElement}></div>
+	<div class="h-full ">
+		<div class="h-full w-full min-h-[calc(100vh-8rem)]" bind:this={mapElement}></div>
 	</div>
 
 	<!-- the address form -->
@@ -131,6 +131,7 @@
 		<div class="flex w-full flex-col items-center bg-white p-8 shadow-xl md:max-w-[450px]">
 			{#if !addressComplete}
 				<h2 class="py-3 text-2xl text-gray-500">Address Details</h2>
+                <small>* Click on the map to set coordinates and prefill the form</small>
 				<form
 					method="POST"
 					action="?/createAddress"

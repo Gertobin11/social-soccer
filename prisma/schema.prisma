@@ -26,7 +26,6 @@ model User {
     sessions           Session[]
     passwordResetToken PasswordResetToken[]
     games              Game[]               @relation("playersInGame")
-    waitingLists       Game[]               @relation()
     ratings            Rating[]
     emailVerification  EmailVerification[]
     requestsToJoin     RequestToJoin[]
@@ -102,7 +101,6 @@ model Game {
     location    Address  @relation(references: [id], fields: [locationID], onDelete: Cascade)
     level       Level
     players     User[]   @relation("playersInGame")
-    waitingList User[]
     rating      Rating[]
 
     requestsToJoin RequestToJoin[]

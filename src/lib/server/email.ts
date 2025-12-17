@@ -12,8 +12,8 @@ const transporter = createTransport({
 
 /**
  * Function that sends a verification email to a user
- * @param email the emil of the user to send the email to
- * @param url the link the user will click to authenicate
+ * @param email string
+ * @param url string
  */
 export async function sendVerificationEmail(email: string, url: string) {
 	try {
@@ -35,8 +35,8 @@ export async function sendVerificationEmail(email: string, url: string) {
 
 /**
  * Function that sends a password rest email
- * @param email The email of the user to send the email to
- * @param url The url thast ha the token to reset their email
+ * @param email string
+ * @param url string
  */
 export async function sendPasswordRestEmail(email: string, url: string) {
 	try {

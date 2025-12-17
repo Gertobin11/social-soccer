@@ -14,7 +14,7 @@ import type { Address } from '@prisma/client';
  * Function that either calls thw ORM to create a new address, which is encryped,
  * or if there is a previous address, it calls the orm to update the address with
  * the new coordinates, then calls the orm to  delete the old cordinates
- * @param form The submitted supervalidated form
+ * @param form SuperValidated<AddressData>
  * @returns Promise<number>
  */
 export async function createAddressFromForm(form: SuperValidated<AddressData>) {
@@ -36,12 +36,12 @@ export async function createAddressFromForm(form: SuperValidated<AddressData>) {
 }
 
 /**
- *
- * @param data Function that calls the orm to update the address
+ * Function that calls the orm to update the address
  * with the new details and new coordinates and calls the orm to
- * deete the old referece
- * @param coordinatesID the id of the new coordinates
- * @returns the new address object
+ * delete the old referece
+ * @param data AddressFields
+ * @param coordinatesID number
+ * @returns Promise<Address>
  */
 export async function performUpdate(data: AddressFields, coordinatesID: number) {
 	let previousCoordiantesID: number | undefined = undefined;
@@ -66,8 +66,8 @@ export async function performUpdate(data: AddressFields, coordinatesID: number) 
 /**
  * Function that takes an encrypted address stored in the database
  * and returns the parts needed for display
- * @param encryptedAddress An encrypted address stored in the database
- * @returns a decrypted address object
+ * @param encryptedAddress Address
+ * @returns Address
  */
 export function getDecryptedAddress(encryptedAddress: Address) {
 	const decryptedAddress: Partial<Address> = {

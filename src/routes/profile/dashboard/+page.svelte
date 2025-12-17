@@ -103,7 +103,7 @@
 	{/if}
 
 	<!-- card for showing the player details -->
-	<div class="col-span-1 flex flex-col rounded border-2 border-gray-200 bg-white p-8 shadow-2xl">
+	<div class="col-span-3 md:col-span-1 flex flex-col rounded border-2 border-gray-200 bg-white p-8 shadow-2xl">
 		<div class="mb-3 flex items-start gap-3">
 			<Icon icon="tdesign:user" width="50" height="50" class="text-primary-500" />
 			<h2 class="pt-5 text-2xl font-bold">Player Details</h2>
@@ -129,7 +129,7 @@
 	</div>
 
 	<!-- card for showing the users managed games -->
-	<div class="col-span-2 flex flex-col rounded border-2 border-gray-200 bg-white p-8 shadow-xl">
+	<div class="col-span-3 md:col-span-2 flex flex-col rounded border-2 border-gray-200 bg-white p-8 shadow-xl">
 		<div class="mb-3 flex items-center gap-3">
 			<Icon
 				icon="material-symbols-light:bookmark-manager-rounded"
@@ -176,7 +176,7 @@
 	</div>
 
 	<!-- card for showing the users address -->
-	<div class="col-span-1 rounded border-2 border-gray-200 bg-white p-8 shadow-xl">
+	<div class="col-span-3 md:col-span-1 rounded border-2 border-gray-200 bg-white p-8 shadow-xl">
 		<div class="mb-3 flex items-start gap-3">
 			<Icon icon="mdi:location" width="50" height="50" class="text-primary-500" />
 			<h2 class="flex items-start pt-5 text-2xl font-bold">Address</h2>
@@ -214,7 +214,7 @@
 	</div>
 
 	<!-- card for showing the games that a user is participating in -->
-	<div class="col-span-2 flex flex-col rounded border-2 border-gray-200 bg-white p-8 shadow-xl">
+	<div class="col-span-3 md:col-span-2 flex flex-col rounded border-2 border-gray-200 bg-white p-8 shadow-xl">
 		<div class="mb-3 flex items-start gap-3">
 			<Icon icon="mdi:calendar-check" width="50" height="50" class="text-primary-500" />
 			<h2 class="pt-4 text-2xl font-bold">Games Participating</h2>
