@@ -76,11 +76,13 @@
 			<div class="my-4 flex justify-center">
 				<button class="button-reg btn">Submit</button>
 			</div>
-			<div class="flex w-full justify-end">
+
+            <!--TODO reimplement with email service -->
+			<!-- <div class="flex w-full justify-end">
 				<a class="text-surface-600 underline hover:text-surface-400" href="/auth/password-reset"
 					>Forgot Password?</a
 				>
-			</div>
+			</div> -->
 		</form>
 	</div>
 </section>

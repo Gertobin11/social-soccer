@@ -10,7 +10,6 @@ import {
 	setSessionTokenCookie
 } from '$lib/server/auth';
 import { hash } from '@node-rs/argon2';
-import prisma from '$lib/server/prisma';
 import { sendVerificationEmail } from '$lib/server/email';
 import { redirect, setFlash } from 'sveltekit-flash-message/server';
 import { getErrorMessage } from '$lib/client/utils';
@@ -55,10 +54,13 @@ export const actions: Actions = {
 
 			await createUser(userID, email, passwordHash);
 
+            //TODO implemented email service api
+            // do not send for now as ports blocked by digital ocean
+
             // create the email validation token
-			const token = await createEmailVerificationToken(userID);
-			const url = event.url.origin + '/auth/email-verification/' + token;
-			await sendVerificationEmail(email, url);
+			// const token = await createEmailVerificationToken(userID);
+			// const url = event.url.origin + '/auth/email-verification/' + token;
+			// await sendVerificationEmail(email, url);
 
             // sign the user in to their unverified account
 			const sessionToken = generateToken();

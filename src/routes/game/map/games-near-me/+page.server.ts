@@ -30,8 +30,8 @@ export const load: PageServerLoad = async (event) => {
 		const userCoordinates = await getCoordinateByID(user.address.coordinatesID);
 
 		const nearestGames = await findNearestGames(
-			userCoordinates.location.coordinates[0],
 			userCoordinates.location.coordinates[1],
+			userCoordinates.location.coordinates[0],
 			10
 		);
 
